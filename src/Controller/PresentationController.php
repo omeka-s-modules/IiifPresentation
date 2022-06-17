@@ -13,6 +13,8 @@ class PresentationController extends AbstractActionController
             '@context' => 'http://iiif.io/api/presentation/3/context.json',
             'id' => $this->url()->fromRoute(null, [], ['force_canonical' => true], true),
             'type' => 'Manifest',
+            'behavior' => ['individuals', 'no-auto-advance'], // Default behaviors
+            'viewingDirection' => 'left-to-right', // Default viewing direction
             'label' => [
                 'none' => [$item->displayTitle()],
             ],
@@ -24,6 +26,15 @@ class PresentationController extends AbstractActionController
                     'id' => $this->url()->fromRoute('top', [], ['force_canonical' => true]),
                     'type' => 'Agent',
                     'label' => ['none' => [$this->settings()->get('installation_title')]],
+                ],
+            ],
+            'seeAlso' => [
+                [
+                    'id' => $this->url()->fromRoute('api/default', ['resource' => 'items', 'id' => $item->id()], ['force_canonical' => true, 'query' => ['pretty_print' => true]]),
+                    'type' => 'Dataset',
+                    'label' => ['none' => ['Item metadata']],
+                    'format' => 'application/ld+json',
+                    'profile' => 'https://www.w3.org/TR/json-ld/',
                 ],
             ],
         ];
