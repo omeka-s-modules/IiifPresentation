@@ -2,10 +2,21 @@
 namespace IiifPresentation\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
 
-class PresentationController extends AbstractActionController
+class ItemController extends AbstractActionController
 {
+    public function renderAction()
+    {
+        $item = $this->api()->read('items', $this->params('item-id'))->getContent();
+        $manifestUrl = $this->url()->fromRoute('iiif/items/manifest', [], ['force_canonical' => true], true);
+
+        $view = new ViewModel;
+        $view->setTerminal(true);
+        $view->setVariable('manifestUrl', $manifestUrl);
+        return $view;
+    }
+
     public function manifestAction()
     {
         $item = $this->api()->read('items', $this->params('item-id'))->getContent();
@@ -37,6 +48,7 @@ class PresentationController extends AbstractActionController
                     'profile' => 'https://www.w3.org/TR/json-ld/',
                 ],
             ],
+            'metadata' => $this->getMetadata($item),
         ];
         // Manifest thumbnail.
         $primaryMedia = $item->primaryMedia();
@@ -48,28 +60,6 @@ class PresentationController extends AbstractActionController
                 ],
             ];
         }
-        // Manifest metadata.
-        $metadata = [];
-        foreach ($item->values() as $term => $propertyValues) {
-            $label = $propertyValues['alternate_label'] ?? $propertyValues['property']->label();
-            foreach ($propertyValues['values'] as $valueRep) {
-                $value = $valueRep->value();
-                if (!is_string($value)) {
-                    continue;
-                }
-                $lang = $valueRep->lang();
-                if (!$lang) {
-                    $lang = 'none';
-                }
-                $metadata[$label][$lang][] =  $value;
-            }
-        }
-        foreach ($metadata as $label => $values) {
-            $manifest['metadata'][] = [
-                'label' => ['none' => [$label]],
-                'value' => $values,
-            ];
-        }
 
         foreach ($item->media() as $media) {
             $mediaType = $media->mediaType();
@@ -78,7 +68,7 @@ class PresentationController extends AbstractActionController
             }
             [$width, $height] = getimagesize($media->originalUrl());
             $manifest['items'][] = [
-                'id' => $this->url()->fromRoute('iiif-presentation/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
+                'id' => $this->url()->fromRoute('iiif/items/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
                 'type' => 'Canvas',
                 'label' => [
                     'none' => [
@@ -93,13 +83,14 @@ class PresentationController extends AbstractActionController
                         'type' => 'Image',
                     ],
                 ],
+                'metadata' => $this->getMetadata($media),
                 'items' => [
                     [
-                        'id' => $this->url()->fromRoute('iiif-presentation/annotation-page', ['media-id' => $media->id()], ['force_canonical' => true], true),
+                        'id' => $this->url()->fromRoute('iiif/items/annotation-page', ['media-id' => $media->id()], ['force_canonical' => true], true),
                         'type' => 'AnnotationPage',
                         'items' => [
                             [
-                                'id' => $this->url()->fromRoute('iiif-presentation/annotation', ['media-id' => $media->id()], ['force_canonical' => true], true),
+                                'id' => $this->url()->fromRoute('iiif/items/annotation', ['media-id' => $media->id()], ['force_canonical' => true], true),
                                 'type' => 'Annotation',
                                 'motivation' => 'painting',
                                 'body' => [
@@ -109,7 +100,7 @@ class PresentationController extends AbstractActionController
                                     'width' => $width,
                                     'height' => $height,
                                 ],
-                                'target' => $this->url()->fromRoute('iiif-presentation/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
+                                'target' => $this->url()->fromRoute('iiif/items/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
                             ],
                         ],
                     ],
@@ -117,6 +108,33 @@ class PresentationController extends AbstractActionController
             ];
         }
         return $this->getResponse()->setContent(json_encode($manifest, JSON_PRETTY_PRINT));
+    }
+
+    public function getMetadata($resource)
+    {
+        $allValues = [];
+        foreach ($resource->values() as $term => $propertyValues) {
+            $label = $propertyValues['alternate_label'] ?? $propertyValues['property']->label();
+            foreach ($propertyValues['values'] as $valueRep) {
+                $value = $valueRep->value();
+                if (!is_string($value)) {
+                    continue;
+                }
+                $lang = $valueRep->lang();
+                if (!$lang) {
+                    $lang = 'none';
+                }
+                $allValues[$label][$lang][] =  $value;
+            }
+        }
+        $metadata = [];
+        foreach ($allValues as $label => $values) {
+            $metadata[] = [
+                'label' => ['none' => [$label]],
+                'value' => $values,
+            ];
+        }
+        return $metadata;
     }
 
     public function getResponse()

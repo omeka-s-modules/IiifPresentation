@@ -24,15 +24,15 @@ return [
     'controllers' => [
         'invokables' => [
             'IiifPresentation\Controller\Index' => Controller\IndexController::class,
-            'IiifPresentation\Controller\Presentation' => Controller\PresentationController::class,
+            'IiifPresentation\Controller\Item' => Controller\ItemController::class,
         ],
     ],
     'router' => [
         'routes' => [
-            'iiif-presentation' => [
-                'type' => Http\Literal::class,
+            'iiif' => [
+                'type' =>  Http\Literal::class,
                 'options' => [
-                    'route' => '/iiif/presentation',
+                    'route' => '/iiif',
                     'defaults' => [
                         '__NAMESPACE__' => 'IiifPresentation\Controller',
                         'controller' => 'index',
@@ -41,58 +41,80 @@ return [
                 ],
                 'may_terminate' => true,
                 'child_routes' => [
-                    'manifest' => [
-                        'type' => Http\Segment::class,
+                    'items' => [
+                        'type' => Http\Literal::class,
                         'options' => [
-                            'route' => '/:item-id/manifest',
+                            'route' => '/items',
                             'defaults' => [
-                                'controller' => 'presentation',
-                                'action' => 'manifest',
-                            ],
-                            'constraints' => [
-                                'item-id' => '\d+',
+                                'controller' => 'item',
+                                'action' => 'index',
                             ],
                         ],
-                    ],
-                    'canvas' => [
-                        'type' => Http\Segment::class,
-                        'options' => [
-                            'route' => '/:item-id/canvas/:media-id',
-                            'defaults' => [
-                                'controller' => 'presentation',
-                                'action' => 'canvas',
+                        'may_terminate' => true,
+                        'child_routes' => [
+                            'render' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-id',
+                                    'defaults' => [
+                                        'action' => 'render',
+                                    ],
+                                    'constraints' => [
+                                        'item-id' => '\d+',
+                                    ],
+                                ],
                             ],
-                            'constraints' => [
-                                'item-id' => '\d+',
-                                'media-id' => '\d+',
+                            'manifest' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-id/manifest',
+                                    'defaults' => [
+                                        'action' => 'manifest',
+                                    ],
+                                    'constraints' => [
+                                        'item-id' => '\d+',
+                                    ],
+                                ],
                             ],
-                        ],
-                    ],
-                    'annotation-page' => [
-                        'type' => Http\Segment::class,
-                        'options' => [
-                            'route' => '/:item-id/annotation-page/:media-id',
-                            'defaults' => [
-                                'controller' => 'presentation',
-                                'action' => 'annotation-page',
+                            'canvas' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-id/canvas/:media-id',
+                                    'defaults' => [
+                                        'action' => 'canvas',
+                                    ],
+                                    'constraints' => [
+                                        'item-id' => '\d+',
+                                        'media-id' => '\d+',
+                                    ],
+                                ],
                             ],
-                            'constraints' => [
-                                'item-id' => '\d+',
-                                'media-id' => '\d+',
+                            'annotation-page' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-id/annotation-page/:media-id',
+                                    'defaults' => [
+                                        'action' => 'annotation-page',
+                                    ],
+                                    'constraints' => [
+                                        'item-id' => '\d+',
+                                        'media-id' => '\d+',
+                                    ],
+                                ],
                             ],
-                        ],
-                    ],
-                    'annotation' => [
-                        'type' => Http\Segment::class,
-                        'options' => [
-                            'route' => '/:item-id/annotation/:media-id',
-                            'defaults' => [
-                                'controller' => 'presentation',
-                                'action' => 'annotation',
-                            ],
-                            'constraints' => [
-                                'item-id' => '\d+',
-                                'media-id' => '\d+',
+                            'annotation' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-id/annotation/:media-id',
+                                    'defaults' => [
+                                        'controller' => 'item',
+                                        'action' => 'annotation',
+                                    ],
+                                    'constraints' => [
+                                        'item-id' => '\d+',
+                                        'media-id' => '\d+',
+                                    ],
+                                ],
                             ],
                         ],
                     ],
