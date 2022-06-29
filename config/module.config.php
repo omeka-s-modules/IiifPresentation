@@ -29,22 +29,25 @@ return [
     ],
     'router' => [
         'routes' => [
-            'iiif' => [
-                'type' =>  Http\Literal::class,
+            'iiif-presentation' => [
+                'type' => Http\Segment::class,
                 'options' => [
-                    'route' => '/iiif',
+                    'route' => '/iiif-presentation/:version',
                     'defaults' => [
                         '__NAMESPACE__' => 'IiifPresentation\Controller',
                         'controller' => 'index',
                         'action' => 'index',
                     ],
+                    'constraints' => [
+                        'version' => '2|3',
+                    ],
                 ],
                 'may_terminate' => true,
                 'child_routes' => [
-                    'items' => [
+                    'item' => [
                         'type' => Http\Literal::class,
                         'options' => [
-                            'route' => '/items',
+                            'route' => '/item',
                             'defaults' => [
                                 'controller' => 'item',
                                 'action' => 'index',
@@ -52,12 +55,36 @@ return [
                         ],
                         'may_terminate' => true,
                         'child_routes' => [
-                            'render' => [
+                            'view-collection' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-ids',
+                                    'defaults' => [
+                                        'action' => 'view-collection',
+                                    ],
+                                    'constraints' => [
+                                        'item-id' => '(\d+,)+',
+                                    ],
+                                ],
+                            ],
+                            'collection' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-ids/collection',
+                                    'defaults' => [
+                                        'action' => 'collection',
+                                    ],
+                                    'constraints' => [
+                                        'item-id' => '(\d+,)+',
+                                    ],
+                                ],
+                            ],
+                            'view-manifest' => [
                                 'type' => Http\Segment::class,
                                 'options' => [
                                     'route' => '/:item-id',
                                     'defaults' => [
-                                        'action' => 'render',
+                                        'action' => 'view-manifest',
                                     ],
                                     'constraints' => [
                                         'item-id' => '\d+',

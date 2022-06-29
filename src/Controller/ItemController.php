@@ -6,15 +6,40 @@ use Laminas\View\Model\ViewModel;
 
 class ItemController extends AbstractActionController
 {
-    public function renderAction()
+    public function viewCollectionAction()
     {
-        $item = $this->api()->read('items', $this->params('item-id'))->getContent();
-        $manifestUrl = $this->url()->fromRoute('iiif/items/manifest', [], ['force_canonical' => true], true);
+        $collectionUrl = $this->url()->fromRoute('iiif-presentation/item/collection', [], ['force_canonical' => true], true);
+        return $this->redirect()->toRoute('iiif-viewer', [], ['query' => ['url' => $collectionUrl]]);
+    }
 
-        $view = new ViewModel;
-        $view->setTerminal(true);
-        $view->setVariable('manifestUrl', $manifestUrl);
-        return $view;
+    public function collectionAction()
+    {
+        $itemIds = explode(',', $this->params('item-ids'));
+        $collection = [
+            '@context' => 'http://iiif.io/api/presentation/3/context.json',
+            'id' => $this->url()->fromRoute(null, [], ['force_canonical' => true], true),
+            'type' => 'Collection',
+            'label' => [
+                'none' => [$this->translate('Items collection')],
+            ],
+        ];
+        foreach ($itemIds as $itemId) {
+            $item = $this->api()->read('items', $itemId)->getContent();
+            $collection['items'][] = [
+                'id' => $this->url()->fromRoute('iiif-presentation/item/manifest', ['item-id' => $item->id()], ['force_canonical' => true], true),
+                'type' => 'Manifest',
+                'label' => [
+                    'none' => [$item->displayTitle()],
+                ],
+            ];
+        }
+        return $this->getResponse()->setContent(json_encode($collection, JSON_PRETTY_PRINT));
+    }
+
+    public function viewManifestAction()
+    {
+        $manifestUrl = $this->url()->fromRoute('iiif-presentation/item/manifest', [], ['force_canonical' => true], true);
+        return $this->redirect()->toRoute('iiif-viewer', [], ['query' => ['url' => $manifestUrl]]);
     }
 
     public function manifestAction()
@@ -68,7 +93,7 @@ class ItemController extends AbstractActionController
             }
             [$width, $height] = getimagesize($media->originalUrl());
             $manifest['items'][] = [
-                'id' => $this->url()->fromRoute('iiif/items/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
+                'id' => $this->url()->fromRoute('iiif-presentation/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
                 'type' => 'Canvas',
                 'label' => [
                     'none' => [
@@ -86,11 +111,11 @@ class ItemController extends AbstractActionController
                 'metadata' => $this->getMetadata($media),
                 'items' => [
                     [
-                        'id' => $this->url()->fromRoute('iiif/items/annotation-page', ['media-id' => $media->id()], ['force_canonical' => true], true),
+                        'id' => $this->url()->fromRoute('iiif-presentation/item/annotation-page', ['media-id' => $media->id()], ['force_canonical' => true], true),
                         'type' => 'AnnotationPage',
                         'items' => [
                             [
-                                'id' => $this->url()->fromRoute('iiif/items/annotation', ['media-id' => $media->id()], ['force_canonical' => true], true),
+                                'id' => $this->url()->fromRoute('iiif-presentation/item/annotation', ['media-id' => $media->id()], ['force_canonical' => true], true),
                                 'type' => 'Annotation',
                                 'motivation' => 'painting',
                                 'body' => [
@@ -100,7 +125,7 @@ class ItemController extends AbstractActionController
                                     'width' => $width,
                                     'height' => $height,
                                 ],
-                                'target' => $this->url()->fromRoute('iiif/items/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
+                                'target' => $this->url()->fromRoute('iiif-presentation/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
                             ],
                         ],
                     ],
