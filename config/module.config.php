@@ -27,6 +27,11 @@ return [
             'IiifPresentation\Controller\Item' => Controller\ItemController::class,
         ],
     ],
+    'controller_plugins' => [
+        'invokables' => [
+            'iiifPresentation' => ControllerPlugin\IiifPresentation::class,
+        ],
+    ],
     'router' => [
         'routes' => [
             'iiif-presentation' => [
