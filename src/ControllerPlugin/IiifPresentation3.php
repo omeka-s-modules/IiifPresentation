@@ -80,7 +80,7 @@ class IiifPresentation3 extends AbstractPlugin
                 [
                     'id' => $controller->url()->fromRoute('api/default', ['resource' => 'items', 'id' => $item->id()], ['force_canonical' => true, 'query' => ['pretty_print' => true]]),
                     'type' => 'Dataset',
-                    'label' => ['none' => ['Item metadata']],
+                    'label' => ['none' => [$controller->translate('Item metadata')]],
                     'format' => 'application/ld+json',
                     'profile' => 'https://www.w3.org/TR/json-ld/',
                 ],
@@ -169,10 +169,10 @@ class IiifPresentation3 extends AbstractPlugin
             }
         }
         $metadata = [];
-        foreach ($allValues as $label => $values) {
+        foreach ($allValues as $label => $valueData) {
             $metadata[] = [
                 'label' => ['none' => [$label]],
-                'value' => $values,
+                'value' => $valueData,
             ];
         }
         return $metadata;
