@@ -65,7 +65,7 @@ return [
                                         'action' => 'view-collection',
                                     ],
                                     'constraints' => [
-                                        'item-id' => '(\d+,)+',
+                                        'item-ids' => '[\d+,]+',
                                     ],
                                 ],
                             ],
@@ -77,7 +77,7 @@ return [
                                         'action' => 'collection',
                                     ],
                                     'constraints' => [
-                                        'item-id' => '(\d+,)+',
+                                        'item-ids' => '[\d+,]+',
                                     ],
                                 ],
                             ],
