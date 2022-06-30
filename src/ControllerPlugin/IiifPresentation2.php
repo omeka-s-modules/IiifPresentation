@@ -13,6 +13,22 @@ class IiifPresentation2 extends AbstractPlugin
      */
     public function getItemsCollection(array $itemIds, string $label)
     {
+        $controller = $this->getController();
+        $collection = [
+            '@context' => 'http://iiif.io/api/presentation/2/context.json',
+            '@id' => $controller->url()->fromRoute(null, [], ['force_canonical' => true], true),
+            '@type' => 'sc:Collection',
+            'label' => $label,
+        ];
+        foreach ($itemIds as $itemId) {
+            $item = $controller->api()->read('items', $itemId)->getContent();
+            $collection['manifests'][] = [
+                '@id' => $controller->url()->fromRoute('iiif-presentation-2/item/manifest', ['item-id' => $item->id()], ['force_canonical' => true], true),
+                '@type' => 'sc:Manifest',
+                'label' => $item->displayTitle(),
+            ];
+        }
+        return $collection;
     }
 
     /**
@@ -22,6 +38,10 @@ class IiifPresentation2 extends AbstractPlugin
      */
     public function getItemSetCollection(int $itemSetId)
     {
+        $controller = $this->getController();
+        $itemSet = $controller->api()->read('item_sets', $itemSetId)->getContent();
+        $itemIds = $controller->api()->search('items', ['item_set_id' => $itemSetId], ['returnScalar' => 'id'])->getContent();
+        return $this->getItemsCollection($itemIds, $itemSet->displayTitle());
     }
 
     /**

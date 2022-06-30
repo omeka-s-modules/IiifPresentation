@@ -51,6 +51,43 @@ return [
                 ],
                 'may_terminate' => true,
                 'child_routes' => [
+                    'item-set' => [
+                        'type' => Http\Literal::class,
+                        'options' => [
+                            'route' => '/item-set',
+                            'defaults' => [
+                                'controller' => 'item-set',
+                                'action' => 'index',
+                            ],
+                        ],
+                        'may_terminate' => true,
+                        'child_routes' => [
+                            'view-collection' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-set-id',
+                                    'defaults' => [
+                                        'action' => 'view-collection',
+                                    ],
+                                    'constraints' => [
+                                        'item-set-id' => '\d+',
+                                    ],
+                                ],
+                            ],
+                            'collection' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-set-id/collection',
+                                    'defaults' => [
+                                        'action' => 'collection',
+                                    ],
+                                    'constraints' => [
+                                        'item-set-id' => '\d+',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
                     'item' => [
                         'type' => Http\Literal::class,
                         'options' => [
@@ -62,6 +99,30 @@ return [
                         ],
                         'may_terminate' => true,
                         'child_routes' => [
+                            'view-collection' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-ids',
+                                    'defaults' => [
+                                        'action' => 'view-collection',
+                                    ],
+                                    'constraints' => [
+                                        'item-ids' => '[\d+,]+',
+                                    ],
+                                ],
+                            ],
+                            'collection' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-ids/collection',
+                                    'defaults' => [
+                                        'action' => 'collection',
+                                    ],
+                                    'constraints' => [
+                                        'item-ids' => '[\d+,]+',
+                                    ],
+                                ],
+                            ],
                             'view-manifest' => [
                                 'type' => Http\Segment::class,
                                 'options' => [
