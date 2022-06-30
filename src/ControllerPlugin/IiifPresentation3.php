@@ -11,7 +11,7 @@ class IiifPresentation3 extends AbstractPlugin
      *
      * @see https://iiif.io/api/presentation/3.0/#51-collection
      */
-    public function getCollection(array $itemIds)
+    public function getItemsCollection(array $itemIds, string $label)
     {
         $controller = $this->getController();
         $collection = [
@@ -19,7 +19,7 @@ class IiifPresentation3 extends AbstractPlugin
             'id' => $controller->url()->fromRoute(null, [], ['force_canonical' => true], true),
             'type' => 'Collection',
             'label' => [
-                'none' => [$controller->translate('Items collection')],
+                'none' => [$label],
             ],
         ];
         foreach ($itemIds as $itemId) {
@@ -35,12 +35,20 @@ class IiifPresentation3 extends AbstractPlugin
         return $collection;
     }
 
+    public function getItemSetCollection(int $itemSetId)
+    {
+        $controller = $this->getController();
+        $itemSet = $controller->api()->read('item_sets', $itemSetId)->getContent();
+        $itemIds = $controller->api()->search('items', ['item_set_id' => $itemSetId], ['returnScalar' => 'id'])->getContent();
+        return $this->getItemsCollection($itemIds, $itemSet->displayTitle());
+    }
+
     /**
      * Get a IIIF Presentation manifest for an Omeka item.
      *
      * @see https://iiif.io/api/presentation/3.0/#52-manifest
      */
-    public function getManifest(int $itemId)
+    public function getItemManifest(int $itemId)
     {
         $controller = $this->getController();
         $item = $controller->api()->read('items', $itemId)->getContent();

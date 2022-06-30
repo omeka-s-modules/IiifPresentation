@@ -15,7 +15,7 @@ class ItemController extends AbstractActionController
     public function collectionAction()
     {
         $itemIds = explode(',', $this->params('item-ids'));
-        $collection = $this->iiifPresentation3()->getCollection($itemIds);
+        $collection = $this->iiifPresentation3()->getItemsCollection($itemIds, $this->translate('Items Collection'));
         return $this->iiifPresentation3()->getResponse($collection);
     }
 
@@ -28,7 +28,7 @@ class ItemController extends AbstractActionController
     public function manifestAction()
     {
         $itemId =  $this->params('item-id');
-        $manifest = $this->iiifPresentation3()->getManifest($itemId);
+        $manifest = $this->iiifPresentation3()->getItemManifest($itemId);
         return $this->iiifPresentation3()->getResponse($manifest);
     }
 }

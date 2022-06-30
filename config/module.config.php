@@ -25,6 +25,7 @@ return [
         'invokables' => [
             'IiifPresentation\Controller\v3\Index' => Controller\v3\IndexController::class,
             'IiifPresentation\Controller\v3\Item' => Controller\v3\ItemController::class,
+            'IiifPresentation\Controller\v3\ItemSet' => Controller\v3\ItemSetController::class,
         ],
     ],
     'controller_plugins' => [
@@ -46,6 +47,43 @@ return [
                 ],
                 'may_terminate' => true,
                 'child_routes' => [
+                    'item-set' => [
+                        'type' => Http\Literal::class,
+                        'options' => [
+                            'route' => '/item-set',
+                            'defaults' => [
+                                'controller' => 'item-set',
+                                'action' => 'index',
+                            ],
+                        ],
+                        'may_terminate' => true,
+                        'child_routes' => [
+                            'view-collection' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-set-id',
+                                    'defaults' => [
+                                        'action' => 'view-collection',
+                                    ],
+                                    'constraints' => [
+                                        'item-set-id' => '\d+',
+                                    ],
+                                ],
+                            ],
+                            'collection' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-set-id/collection',
+                                    'defaults' => [
+                                        'action' => 'collection',
+                                    ],
+                                    'constraints' => [
+                                        'item-set-id' => '\d+',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
                     'item' => [
                         'type' => Http\Literal::class,
                         'options' => [
