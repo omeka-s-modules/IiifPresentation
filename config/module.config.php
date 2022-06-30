@@ -23,28 +23,25 @@ return [
     ],
     'controllers' => [
         'invokables' => [
-            'IiifPresentation\Controller\Index' => Controller\IndexController::class,
-            'IiifPresentation\Controller\Item' => Controller\ItemController::class,
+            'IiifPresentation\Controller\v3\Index' => Controller\v3\IndexController::class,
+            'IiifPresentation\Controller\v3\Item' => Controller\v3\ItemController::class,
         ],
     ],
     'controller_plugins' => [
         'invokables' => [
-            'iiifPresentation' => ControllerPlugin\IiifPresentation::class,
+            'iiifPresentation3' => ControllerPlugin\IiifPresentation3::class,
         ],
     ],
     'router' => [
         'routes' => [
-            'iiif-presentation' => [
-                'type' => Http\Segment::class,
+            'iiif-presentation-3' => [
+                'type' => Http\Literal::class,
                 'options' => [
-                    'route' => '/iiif-presentation/:version',
+                    'route' => '/iiif-presentation/3',
                     'defaults' => [
-                        '__NAMESPACE__' => 'IiifPresentation\Controller',
+                        '__NAMESPACE__' => 'IiifPresentation\Controller\v3',
                         'controller' => 'index',
                         'action' => 'index',
-                    ],
-                    'constraints' => [
-                        'version' => '2|3',
                     ],
                 ],
                 'may_terminate' => true,

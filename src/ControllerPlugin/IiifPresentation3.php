@@ -4,66 +4,14 @@ namespace IiifPresentation\ControllerPlugin;
 use Omeka\Api\Representation\AbstractResourceEntityRepresentation;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
-class IiifPresentation extends AbstractPlugin
+class IiifPresentation3 extends AbstractPlugin
 {
     /**
-     * Get a IIIF Presentation API response
+     * Get a IIIF Presentation collection of Omeka items.
      *
-     * @see https://iiif.io/api/presentation/2.1/#responses
-     * @see https://iiif.io/api/presentation/3.0/#63-responses
+     * @see https://iiif.io/api/presentation/3.0/#51-collection
      */
-    public function getResponse(int $version, array $content)
-    {
-        $controller = $this->getController();
-        switch ($version) {
-            case 2:
-                $contentType = 'application/ld+json';
-                break;
-            case 3:
-                $contentType = 'application/ld+json;profile="http://iiif.io/api/presentation/3/context.json"';
-                break;
-            default:
-                throw new \Exception('Invalid or unsupported IIIF Presentation API version');
-        }
-        $response = $controller->getResponse();
-        $response->getHeaders()->addHeaders([
-            'Content-Type' =>  $contentType,
-            'Access-Control-Allow-Origin' => '*',
-        ]);
-        $response->setContent(json_encode($content, JSON_PRETTY_PRINT));
-        return $response;
-    }
-
-    public function getCollection(int $version, array $itemIds)
-    {
-        switch ($version) {
-            case 2:
-                return $this->getCollectionV2($itemIds);
-            case 3:
-                return $this->getCollectionV3($itemIds);
-            default:
-                throw new \Exception('Invalid or unsupported IIIF Presentation API version');
-        }
-    }
-
-    public function getManifest(int $version, int $itemId)
-    {
-        switch ($version) {
-            case 2:
-                return $this->getManifestV2($itemId);
-            case 3:
-                return $this->getManifestV3($itemId);
-            default:
-                throw new \Exception('Invalid or unsupported IIIF Presentation API version');
-        }
-    }
-
-    public function getCollectionV2(array $itemIds)
-    {
-        return [];
-    }
-
-    public function getCollectionV3(array $itemIds)
+    public function getCollection(array $itemIds)
     {
         $controller = $this->getController();
         $collection = [
@@ -77,7 +25,7 @@ class IiifPresentation extends AbstractPlugin
         foreach ($itemIds as $itemId) {
             $item = $controller->api()->read('items', $itemId)->getContent();
             $collection['items'][] = [
-                'id' => $controller->url()->fromRoute('iiif-presentation/item/manifest', ['item-id' => $item->id()], ['force_canonical' => true], true),
+                'id' => $controller->url()->fromRoute('iiif-presentation-3/item/manifest', ['item-id' => $item->id()], ['force_canonical' => true], true),
                 'type' => 'Manifest',
                 'label' => [
                     'none' => [$item->displayTitle()],
@@ -87,12 +35,12 @@ class IiifPresentation extends AbstractPlugin
         return $collection;
     }
 
-    public function getManifestV2(int $itemId)
-    {
-        return [];
-    }
-
-    public function getManifestV3(int $itemId)
+    /**
+     * Get a IIIF Presentation manifest for an Omeka item.
+     *
+     * @see https://iiif.io/api/presentation/3.0/#52-manifest
+     */
+    public function getManifest(int $itemId)
     {
         $controller = $this->getController();
         $item = $controller->api()->read('items', $itemId)->getContent();
@@ -143,7 +91,7 @@ class IiifPresentation extends AbstractPlugin
             }
             [$width, $height] = getimagesize($media->originalUrl());
             $manifest['items'][] = [
-                'id' => $controller->url()->fromRoute('iiif-presentation/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
+                'id' => $controller->url()->fromRoute('iiif-presentation-3/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
                 'type' => 'Canvas',
                 'label' => [
                     'none' => [
@@ -161,11 +109,11 @@ class IiifPresentation extends AbstractPlugin
                 'metadata' => $this->getMetadata($media),
                 'items' => [
                     [
-                        'id' => $controller->url()->fromRoute('iiif-presentation/item/annotation-page', ['media-id' => $media->id()], ['force_canonical' => true], true),
+                        'id' => $controller->url()->fromRoute('iiif-presentation-3/item/annotation-page', ['media-id' => $media->id()], ['force_canonical' => true], true),
                         'type' => 'AnnotationPage',
                         'items' => [
                             [
-                                'id' => $controller->url()->fromRoute('iiif-presentation/item/annotation', ['media-id' => $media->id()], ['force_canonical' => true], true),
+                                'id' => $controller->url()->fromRoute('iiif-presentation-3/item/annotation', ['media-id' => $media->id()], ['force_canonical' => true], true),
                                 'type' => 'Annotation',
                                 'motivation' => 'painting',
                                 'body' => [
@@ -175,7 +123,7 @@ class IiifPresentation extends AbstractPlugin
                                     'width' => $width,
                                     'height' => $height,
                                 ],
-                                'target' => $controller->url()->fromRoute('iiif-presentation/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
+                                'target' => $controller->url()->fromRoute('iiif-presentation-3/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
                             ],
                         ],
                     ],
@@ -185,6 +133,11 @@ class IiifPresentation extends AbstractPlugin
         return $manifest;
     }
 
+    /**
+     * Get the metadata of an Omeka resource, formatted for IIIF Presentation.
+     *
+     * @see https://iiif.io/api/presentation/3.0/#metadata
+     */
     public function getMetadata(AbstractResourceEntityRepresentation $resource)
     {
         $allValues = [];
@@ -210,5 +163,22 @@ class IiifPresentation extends AbstractPlugin
             ];
         }
         return $metadata;
+    }
+
+    /**
+     * Get a IIIF Presentation API response.
+     *
+     * @see https://iiif.io/api/presentation/3.0/#63-responses
+     */
+    public function getResponse(array $content)
+    {
+        $controller = $this->getController();
+        $response = $controller->getResponse();
+        $response->getHeaders()->addHeaders([
+            'Content-Type' => 'application/ld+json;profile="http://iiif.io/api/presentation/3/context.json"',
+            'Access-Control-Allow-Origin' => '*',
+        ]);
+        $response->setContent(json_encode($content, JSON_PRETTY_PRINT));
+        return $response;
     }
 }

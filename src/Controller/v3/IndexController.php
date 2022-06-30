@@ -1,5 +1,5 @@
 <?php
-namespace IiifPresentation\Controller;
+namespace IiifPresentation\Controller\v3;
 
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
