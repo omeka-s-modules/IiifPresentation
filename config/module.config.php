@@ -23,6 +23,9 @@ return [
     ],
     'controllers' => [
         'invokables' => [
+            'IiifPresentation\Controller\v2\Index' => Controller\v2\IndexController::class,
+            'IiifPresentation\Controller\v2\Item' => Controller\v2\ItemController::class,
+            'IiifPresentation\Controller\v2\ItemSet' => Controller\v2\ItemSetController::class,
             'IiifPresentation\Controller\v3\Index' => Controller\v3\IndexController::class,
             'IiifPresentation\Controller\v3\Item' => Controller\v3\ItemController::class,
             'IiifPresentation\Controller\v3\ItemSet' => Controller\v3\ItemSetController::class,
@@ -30,11 +33,88 @@ return [
     ],
     'controller_plugins' => [
         'invokables' => [
+            'iiifPresentation2' => ControllerPlugin\IiifPresentation2::class,
             'iiifPresentation3' => ControllerPlugin\IiifPresentation3::class,
         ],
     ],
     'router' => [
         'routes' => [
+            'iiif-presentation-2' => [
+                'type' => Http\Literal::class,
+                'options' => [
+                    'route' => '/iiif-presentation/2',
+                    'defaults' => [
+                        '__NAMESPACE__' => 'IiifPresentation\Controller\v2',
+                        'controller' => 'index',
+                        'action' => 'index',
+                    ],
+                ],
+                'may_terminate' => true,
+                'child_routes' => [
+                    'item' => [
+                        'type' => Http\Literal::class,
+                        'options' => [
+                            'route' => '/item',
+                            'defaults' => [
+                                'controller' => 'item',
+                                'action' => 'index',
+                            ],
+                        ],
+                        'may_terminate' => true,
+                        'child_routes' => [
+                            'view-manifest' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-id',
+                                    'defaults' => [
+                                        'action' => 'view-manifest',
+                                    ],
+                                    'constraints' => [
+                                        'item-id' => '\d+',
+                                    ],
+                                ],
+                            ],
+                            'manifest' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-id/manifest',
+                                    'defaults' => [
+                                        'action' => 'manifest',
+                                    ],
+                                    'constraints' => [
+                                        'item-id' => '\d+',
+                                    ],
+                                ],
+                            ],
+                            'sequence' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-id/sequence',
+                                    'defaults' => [
+                                        'action' => 'sequence',
+                                    ],
+                                    'constraints' => [
+                                        'item-id' => '\d+',
+                                    ],
+                                ],
+                            ],
+                            'canvas' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-id/canvas/:media-id',
+                                    'defaults' => [
+                                        'action' => 'canvas',
+                                    ],
+                                    'constraints' => [
+                                        'item-id' => '\d+',
+                                        'media-id' => '\d+',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
             'iiif-presentation-3' => [
                 'type' => Http\Literal::class,
                 'options' => [
