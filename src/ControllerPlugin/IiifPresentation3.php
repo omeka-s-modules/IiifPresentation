@@ -35,6 +35,35 @@ class IiifPresentation3 extends AbstractPlugin
         return $collection;
     }
 
+     /**
+     * Get a IIIF Presentation collection of Omeka item sets.
+     *
+     * @see https://iiif.io/api/presentation/3.0/#51-collection
+     */
+    public function getItemSetsCollection(array $itemSetIds)
+    {
+        $controller = $this->getController();
+        $collection = [
+            '@context' => 'http://iiif.io/api/presentation/3/context.json',
+            'id' => $controller->url()->fromRoute(null, [], ['force_canonical' => true], true),
+            'type' => 'Collection',
+            'label' => [
+                'none' => [$controller->translate('Item Sets Collection')],
+            ],
+        ];
+        foreach ($itemSetIds as $itemSetId) {
+            $itemSet = $controller->api()->read('item_sets', $itemSetId)->getContent();
+            $collection['items'][] = [
+                'id' => $controller->url()->fromRoute('iiif-presentation-3/item-set/collection', ['item-set-id' => $itemSet->id()], ['force_canonical' => true], true),
+                'type' => 'Collection',
+                'label' => [
+                    'none' => [$itemSet->displayTitle()],
+                ],
+            ];
+        }
+        return $collection;
+    }
+
     /**
      * Get a IIIF Presentation collection for an Omeka item set.
      *

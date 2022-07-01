@@ -86,6 +86,30 @@ return [
                                     ],
                                 ],
                             ],
+                            'view-collections' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-set-ids',
+                                    'defaults' => [
+                                        'action' => 'view-collections',
+                                    ],
+                                    'constraints' => [
+                                        'item-set-ids' => '(\d+,)+(\d+)',
+                                    ],
+                                ],
+                            ],
+                            'collections' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-set-ids/collection',
+                                    'defaults' => [
+                                        'action' => 'collections',
+                                    ],
+                                    'constraints' => [
+                                        'item-set-ids' => '(\d+,)+(\d+)',
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                     'item' => [
@@ -223,6 +247,30 @@ return [
                                     ],
                                 ],
                             ],
+                            'view-collections' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-set-ids',
+                                    'defaults' => [
+                                        'action' => 'view-collections',
+                                    ],
+                                    'constraints' => [
+                                        'item-set-ids' => '(\d+,)+(\d+)',
+                                    ],
+                                ],
+                            ],
+                            'collections' => [
+                                'type' => Http\Segment::class,
+                                'options' => [
+                                    'route' => '/:item-set-ids/collection',
+                                    'defaults' => [
+                                        'action' => 'collections',
+                                    ],
+                                    'constraints' => [
+                                        'item-set-ids' => '(\d+,)+(\d+)',
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                     'item' => [
@@ -244,7 +292,7 @@ return [
                                         'action' => 'view-collection',
                                     ],
                                     'constraints' => [
-                                        'item-ids' => '[\d+,]+',
+                                        'item-ids' => '(\d+,)+(\d+)',
                                     ],
                                 ],
                             ],
@@ -256,7 +304,7 @@ return [
                                         'action' => 'collection',
                                     ],
                                     'constraints' => [
-                                        'item-ids' => '[\d+,]+',
+                                        'item-ids' => '(\d+,)+(\d+)',
                                     ],
                                 ],
                             ],
