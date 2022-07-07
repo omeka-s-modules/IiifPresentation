@@ -1,15 +1,17 @@
 <?php
-namespace IiifPresentation\ControllerPlugin;
+namespace IiifPresentation\v3\ControllerPlugin;
 
-use IiifPresentation\CanvasType\v3\Manager as CanvasTypeManager;
+use IiifPresentation\v3\CanvasType\Manager as CanvasTypeManager;
 use Omeka\Api\Representation\AbstractResourceEntityRepresentation;
-use Omeka\Api\Representation\MediaRepresentation;
 use Laminas\EventManager\Event;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
-class IiifPresentation3 extends AbstractPlugin
+class IiifPresentation extends AbstractPlugin
 {
+    protected $canvasTypeManager;
+    protected $eventManager;
+
     public function __construct(CanvasTypeManager $canvasTypeManager, EventManagerInterface $eventManager)
     {
         $this->canvasTypeManager = $canvasTypeManager;
@@ -45,7 +47,7 @@ class IiifPresentation3 extends AbstractPlugin
         return $collection;
     }
 
-     /**
+    /**
      * Get a IIIF Presentation collection of Omeka item sets.
      *
      * @see https://iiif.io/api/presentation/3.0/#51-collection
@@ -147,7 +149,7 @@ class IiifPresentation3 extends AbstractPlugin
             $canvas = $canvasType->getCanvas($media, $controller);
             if (!$canvas) {
                 // A canvas could not be created.
-               continue;
+                continue;
             }
             // Allow modules to modify the canvas.
             $eventManager = $this->eventManager;
@@ -183,7 +185,7 @@ class IiifPresentation3 extends AbstractPlugin
                 if (!$lang) {
                     $lang = 'none';
                 }
-                $allValues[$label][$lang][] =  $value;
+                $allValues[$label][$lang][] = $value;
             }
         }
         $metadata = [];

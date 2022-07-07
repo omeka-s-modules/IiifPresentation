@@ -1,5 +1,5 @@
 <?php
-namespace IiifPresentation\Controller\v3;
+namespace IiifPresentation\v3\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
 
@@ -13,7 +13,7 @@ class ItemSetController extends AbstractActionController
 
     public function collectionAction()
     {
-        $itemSetId =  $this->params('item-set-id');
+        $itemSetId = $this->params('item-set-id');
         $collection = $this->iiifPresentation3()->getItemSetCollection($itemSetId);
         return $this->iiifPresentation3()->getResponse($collection);
     }

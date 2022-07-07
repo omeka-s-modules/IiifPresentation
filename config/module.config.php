@@ -4,10 +4,16 @@ namespace IiifPresentation;
 use Laminas\Router\Http;
 
 return [
-    'iiif_presentation_canvas_types_v3' => [
+    'iiif_presentation_v2_canvas_types' => [
         'invokables' => [
-            'file' => CanvasType\v3\File::class,
-            'iiif' => CanvasType\v3\IiifImage::class,
+            'file' => v2\CanvasType\File::class,
+            'iiif' => v2\CanvasType\IiifImage::class,
+        ],
+    ],
+    'iiif_presentation_v3_canvas_types' => [
+        'invokables' => [
+            'file' => v3\CanvasType\File::class,
+            'iiif' => v3\CanvasType\IiifImage::class,
         ],
     ],
     'translator' => [
@@ -29,23 +35,24 @@ return [
     ],
     'service_manager' => [
         'factories' => [
-            'IiifPresentation\CanvasType\v3\Manager' => Service\CanvasType\v3\ManagerFactory::class,
+            'IiifPresentation\v2\CanvasTypeManager' => v2\Service\CanvasType\ManagerFactory::class,
+            'IiifPresentation\v3\CanvasTypeManager' => v3\Service\CanvasType\ManagerFactory::class,
         ],
     ],
     'controllers' => [
         'invokables' => [
-            'IiifPresentation\Controller\v2\Index' => Controller\v2\IndexController::class,
-            'IiifPresentation\Controller\v2\Item' => Controller\v2\ItemController::class,
-            'IiifPresentation\Controller\v2\ItemSet' => Controller\v2\ItemSetController::class,
-            'IiifPresentation\Controller\v3\Index' => Controller\v3\IndexController::class,
-            'IiifPresentation\Controller\v3\Item' => Controller\v3\ItemController::class,
-            'IiifPresentation\Controller\v3\ItemSet' => Controller\v3\ItemSetController::class,
+            'IiifPresentation\v2\Controller\Index' => v2\Controller\IndexController::class,
+            'IiifPresentation\v2\Controller\Item' => v2\Controller\ItemController::class,
+            'IiifPresentation\v2\Controller\ItemSet' => v2\Controller\ItemSetController::class,
+            'IiifPresentation\v3\Controller\Index' => v3\Controller\IndexController::class,
+            'IiifPresentation\v3\Controller\Item' => v3\Controller\ItemController::class,
+            'IiifPresentation\v3\Controller\ItemSet' => v3\Controller\ItemSetController::class,
         ],
     ],
     'controller_plugins' => [
         'factories' => [
-            'iiifPresentation2' => Service\ControllerPlugin\IiifPresentation2Factory::class,
-            'iiifPresentation3' => Service\ControllerPlugin\IiifPresentation3Factory::class,
+            'iiifPresentation2' => v2\Service\ControllerPlugin\IiifPresentationFactory::class,
+            'iiifPresentation3' => v3\Service\ControllerPlugin\IiifPresentationFactory::class,
         ],
     ],
     'router' => [
@@ -55,7 +62,7 @@ return [
                 'options' => [
                     'route' => '/iiif-presentation/2',
                     'defaults' => [
-                        '__NAMESPACE__' => 'IiifPresentation\Controller\v2',
+                        '__NAMESPACE__' => 'IiifPresentation\v2\Controller',
                         'controller' => 'index',
                         'action' => 'index',
                     ],
@@ -216,7 +223,7 @@ return [
                 'options' => [
                     'route' => '/iiif-presentation/3',
                     'defaults' => [
-                        '__NAMESPACE__' => 'IiifPresentation\Controller\v3',
+                        '__NAMESPACE__' => 'IiifPresentation\v3\Controller',
                         'controller' => 'index',
                         'action' => 'index',
                     ],

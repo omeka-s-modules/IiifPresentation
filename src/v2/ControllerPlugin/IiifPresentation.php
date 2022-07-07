@@ -1,11 +1,23 @@
 <?php
-namespace IiifPresentation\ControllerPlugin;
+namespace IiifPresentation\v2\ControllerPlugin;
 
+use IiifPresentation\v2\CanvasType\Manager as CanvasTypeManager;
 use Omeka\Api\Representation\AbstractResourceEntityRepresentation;
+use Laminas\EventManager\Event;
+use Laminas\EventManager\EventManagerInterface;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
-class IiifPresentation2 extends AbstractPlugin
+class IiifPresentation extends AbstractPlugin
 {
+    protected $canvasTypeManager;
+    protected $eventManager;
+
+    public function __construct(CanvasTypeManager $canvasTypeManager, EventManagerInterface $eventManager)
+    {
+        $this->canvasTypeManager = $canvasTypeManager;
+        $this->eventManager = $eventManager;
+    }
+
     /**
      * Get a IIIF Presentation collection of Omeka items.
      *
@@ -102,36 +114,28 @@ class IiifPresentation2 extends AbstractPlugin
             ],
         ];
         foreach ($item->media() as $media) {
-            $mediaType = $media->mediaType();
-            if ('image' !== strtok($mediaType, '/')) {
+            $renderer = $media->renderer();
+            if (!$this->canvasTypeManager->has($renderer)) {
+                // There is no canvas type for this renderer.
                 continue;
             }
-            [$width, $height] = getimagesize($media->originalUrl());
-            $manifest['sequences'][0]['canvases'][] = [
-                '@id' => $controller->url()->fromRoute('iiif-presentation-2/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
-                '@type' => 'sc:Canvas',
-                'label' => $media->displayTitle(),
-                'width' => $width,
-                'height' => $height,
-                'thumbnail' => [
-                    '@id' => $media->thumbnailUrl('medium'),
-                    '@type' => 'dctypes:Image',
-                ],
-                'images' => [
-                    [
-                        '@type' => 'oa:Annotation',
-                        'motivation' => 'sc:painting',
-                        'resource' => [
-                            '@id' => $media->originalUrl(),
-                            '@type' => 'dctypes:Image',
-                            'format' =>  $media->mediaType(),
-                            'width' => $width,
-                            'height' => $height,
-                        ],
-                        'on' => $controller->url()->fromRoute('iiif-presentation-2/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
-                    ],
-                ],
-            ];
+            $canvasType = $this->canvasTypeManager->get($renderer);
+            $canvas = $canvasType->getCanvas($media, $controller);
+            if (!$canvas) {
+                // A canvas could not be created.
+                continue;
+            }
+            // Allow modules to modify the canvas.
+            $eventManager = $this->eventManager;
+            $args = $eventManager->prepareArgs([
+                'canvas' => $canvas,
+                'canvas_type' => $canvasType,
+                'media' => $media,
+            ]);
+            $event = new Event('iiif_presentation.v3.canvas', $controller, $args);
+            $eventManager->triggerEvent($event);
+            // Set the canvas to the manifest.
+            $manifest['sequences'][0]['canvases'][] = $args['canvas'];
         }
         return $manifest;
     }
@@ -156,7 +160,7 @@ class IiifPresentation2 extends AbstractPlugin
                 if (!$lang) {
                     $lang = 'none';
                 }
-                $allValues[$label][$lang][] =  $value;
+                $allValues[$label][$lang][] = $value;
             }
         }
         $metadata = [];

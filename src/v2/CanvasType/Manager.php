@@ -1,8 +1,7 @@
 <?php
-namespace IiifPresentation\CanvasType\v3;
+namespace IiifPresentation\v2\CanvasType;
 
 use Omeka\ServiceManager\AbstractPluginManager;
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 class Manager extends AbstractPluginManager
 {

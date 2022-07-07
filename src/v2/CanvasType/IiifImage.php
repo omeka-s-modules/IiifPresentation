@@ -1,26 +1,14 @@
 <?php
-namespace IiifPresentation\CanvasType\v3;
+namespace IiifPresentation\v2\CanvasType;
 
-use IiifPresentation\Controller\v3\ItemController;
+use IiifPresentation\v2\Controller\ItemController;
 use Omeka\Api\Representation\MediaRepresentation;
 
-class File implements CanvasTypeInterface
+class IiifImage implements CanvasTypeInterface
 {
     public function getCanvas(MediaRepresentation $media, ItemController $controller) : ?array
     {
-        $mediaType = $media->mediaType();
-        switch ( strtok($mediaType, '/')) {
-            case 'image':
-                return $this->getCanvasForImageFile($media, $controller);
-            case 'video':
-            default:
-                return null;
-        }
-    }
-
-    public function getCanvasForImageFile(MediaRepresentation $media, ItemController $controller)
-    {
-        [$width, $height] = getimagesize($media->originalUrl());
+        $imageInfo = $media->mediaData();
         return [
             'id' => $controller->url()->fromRoute('iiif-presentation-3/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
             'type' => 'Canvas',
@@ -29,14 +17,8 @@ class File implements CanvasTypeInterface
                     $media->displayTitle(),
                 ],
             ],
-            'width' => $width,
-            'height' => $height,
-            'thumbnail' => [
-                [
-                    'id' => $media->thumbnailUrl('medium'),
-                    'type' => 'Image',
-                ],
-            ],
+            'width' => $imageInfo['width'],
+            'height' => $imageInfo['height'],
             'metadata' => $controller->iiifPresentation3()->getMetadata($media),
             'items' => [
                 [
@@ -50,9 +32,7 @@ class File implements CanvasTypeInterface
                             'body' => [
                                 'id' => $media->originalUrl(),
                                 'type' => 'Image',
-                                'format' => $media->mediaType(),
-                                'width' => $width,
-                                'height' => $height,
+                                'service' => $media->mediaData(),
                             ],
                             'target' => $controller->url()->fromRoute('iiif-presentation-3/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
                         ],

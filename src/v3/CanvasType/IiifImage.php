@@ -1,7 +1,7 @@
 <?php
-namespace IiifPresentation\CanvasType\v3;
+namespace IiifPresentation\v3\CanvasType;
 
-use IiifPresentation\Controller\v3\ItemController;
+use IiifPresentation\v3\Controller\ItemController;
 use Omeka\Api\Representation\MediaRepresentation;
 
 class IiifImage implements CanvasTypeInterface
@@ -40,6 +40,5 @@ class IiifImage implements CanvasTypeInterface
                 ],
             ],
         ];
-
     }
 }

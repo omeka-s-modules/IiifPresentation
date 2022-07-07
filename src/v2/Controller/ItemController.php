@@ -1,5 +1,5 @@
 <?php
-namespace IiifPresentation\Controller\v2;
+namespace IiifPresentation\v2\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
 
@@ -26,7 +26,7 @@ class ItemController extends AbstractActionController
 
     public function manifestAction()
     {
-        $itemId =  $this->params('item-id');
+        $itemId = $this->params('item-id');
         $manifest = $this->iiifPresentation2()->getItemManifest($itemId);
         return $this->iiifPresentation2()->getResponse($manifest);
     }

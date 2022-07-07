@@ -1,5 +1,5 @@
 <?php
-namespace IiifPresentation\Controller\v3;
+namespace IiifPresentation\v3\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
 
