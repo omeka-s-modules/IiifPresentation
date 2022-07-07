@@ -13,6 +13,11 @@ class File implements CanvasTypeInterface
             case 'image':
                 return $this->getCanvasForImageFile($media, $controller);
             case 'video':
+                // IIIF Presentation API 2 does not support video files as
+                // first-class resource content, as it does for image files.
+                // While video can be provided via external annotation lists
+                // referenced in the otherContent property, clients are
+                // inconsistent in their support.
             default:
                 return null;
         }
