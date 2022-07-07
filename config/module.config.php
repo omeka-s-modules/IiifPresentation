@@ -4,6 +4,12 @@ namespace IiifPresentation;
 use Laminas\Router\Http;
 
 return [
+    'iiif_presentation_canvas_types_v3' => [
+        'invokables' => [
+            'file' => CanvasType\v3\File::class,
+            'iiif' => CanvasType\v3\IiifImage::class,
+        ],
+    ],
     'translator' => [
         'translation_file_patterns' => [
             [
@@ -21,6 +27,11 @@ return [
             'ViewJsonStrategy',
         ],
     ],
+    'service_manager' => [
+        'factories' => [
+            'IiifPresentation\CanvasType\v3\Manager' => Service\CanvasType\v3\ManagerFactory::class,
+        ],
+    ],
     'controllers' => [
         'invokables' => [
             'IiifPresentation\Controller\v2\Index' => Controller\v2\IndexController::class,
@@ -32,9 +43,9 @@ return [
         ],
     ],
     'controller_plugins' => [
-        'invokables' => [
-            'iiifPresentation2' => ControllerPlugin\IiifPresentation2::class,
-            'iiifPresentation3' => ControllerPlugin\IiifPresentation3::class,
+        'factories' => [
+            'iiifPresentation2' => Service\ControllerPlugin\IiifPresentation2Factory::class,
+            'iiifPresentation3' => Service\ControllerPlugin\IiifPresentation3Factory::class,
         ],
     ],
     'router' => [

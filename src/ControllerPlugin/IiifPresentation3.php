@@ -1,11 +1,21 @@
 <?php
 namespace IiifPresentation\ControllerPlugin;
 
+use IiifPresentation\CanvasType\v3\Manager as CanvasTypeManager;
 use Omeka\Api\Representation\AbstractResourceEntityRepresentation;
+use Omeka\Api\Representation\MediaRepresentation;
+use Laminas\EventManager\Event;
+use Laminas\EventManager\EventManagerInterface;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 class IiifPresentation3 extends AbstractPlugin
 {
+    public function __construct(CanvasTypeManager $canvasTypeManager, EventManagerInterface $eventManager)
+    {
+        $this->canvasTypeManager = $canvasTypeManager;
+        $this->eventManager = $eventManager;
+    }
+
     /**
      * Get a IIIF Presentation collection of Omeka items.
      *
@@ -115,6 +125,7 @@ class IiifPresentation3 extends AbstractPlugin
                 ],
             ],
             'metadata' => $this->getMetadata($item),
+            'items' => [],
         ];
         // Manifest thumbnail.
         $primaryMedia = $item->primaryMedia();
@@ -127,50 +138,28 @@ class IiifPresentation3 extends AbstractPlugin
             ];
         }
         foreach ($item->media() as $media) {
-            $mediaType = $media->mediaType();
-            if ('image' !== strtok($mediaType, '/')) {
+            $renderer = $media->renderer();
+            if (!$this->canvasTypeManager->has($renderer)) {
+                // There is no canvas type for this renderer.
                 continue;
             }
-            [$width, $height] = getimagesize($media->originalUrl());
-            $manifest['items'][] = [
-                'id' => $controller->url()->fromRoute('iiif-presentation-3/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
-                'type' => 'Canvas',
-                'label' => [
-                    'none' => [
-                        $media->displayTitle(),
-                    ],
-                ],
-                'width' => $width,
-                'height' => $height,
-                'thumbnail' => [
-                    [
-                        'id' => $media->thumbnailUrl('medium'),
-                        'type' => 'Image',
-                    ],
-                ],
-                'metadata' => $this->getMetadata($media),
-                'items' => [
-                    [
-                        'id' => $controller->url()->fromRoute('iiif-presentation-3/item/annotation-page', ['media-id' => $media->id()], ['force_canonical' => true], true),
-                        'type' => 'AnnotationPage',
-                        'items' => [
-                            [
-                                'id' => $controller->url()->fromRoute('iiif-presentation-3/item/annotation', ['media-id' => $media->id()], ['force_canonical' => true], true),
-                                'type' => 'Annotation',
-                                'motivation' => 'painting',
-                                'body' => [
-                                    'id' => $media->originalUrl(),
-                                    'type' => 'Image',
-                                    'format' => $media->mediaType(),
-                                    'width' => $width,
-                                    'height' => $height,
-                                ],
-                                'target' => $controller->url()->fromRoute('iiif-presentation-3/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
-                            ],
-                        ],
-                    ],
-                ],
-            ];
+            $canvasType = $this->canvasTypeManager->get($renderer);
+            $canvas = $canvasType->getCanvas($media, $controller);
+            if (!$canvas) {
+                // A canvas could not be created.
+               continue;
+            }
+            // Allow modules to modify the canvas.
+            $eventManager = $this->eventManager;
+            $args = $eventManager->prepareArgs([
+                'canvas' => $canvas,
+                'canvas_type' => $canvasType,
+                'media' => $media,
+            ]);
+            $event = new Event('iiif_presentation.v3.canvas', $controller, $args);
+            $eventManager->triggerEvent($event);
+            // Set the canvas to the manifest.
+            $manifest['items'][] = $args['canvas'];
         }
         return $manifest;
     }
