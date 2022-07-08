@@ -126,16 +126,16 @@ class IiifPresentation extends AbstractPlugin
                 continue;
             }
             // Allow modules to modify the canvas.
-            $eventManager = $this->eventManager;
-            $args = $eventManager->prepareArgs([
-                'canvas' => $canvas,
-                'canvas_type' => $canvasType,
-                'media' => $media,
-            ]);
-            $event = new Event('iiif_presentation.v3.canvas', $controller, $args);
-            $eventManager->triggerEvent($event);
+            $params = $this->triggerEvent(
+                'iiif_presentation.2.media.canvas',
+                [
+                    'canvas' => $canvas,
+                    'canvas_type' => $canvasType,
+                    'media_id' => $media->id(),
+                ]
+            );
             // Set the canvas to the manifest.
-            $manifest['sequences'][0]['canvases'][] = $args['canvas'];
+            $manifest['sequences'][0]['canvases'][] = $params['canvas'];
         }
         return $manifest;
     }
@@ -181,6 +181,17 @@ class IiifPresentation extends AbstractPlugin
             $metadata[] = $thisMetadata;
         }
         return $metadata;
+    }
+
+    /**
+     * Trigger an event.
+     */
+    public function triggerEvent(string $name, array $params)
+    {
+        $params = $this->eventManager->prepareArgs($params);
+        $event = new Event($name, $this->getController(), $params);
+        $this->eventManager->triggerEvent($event);
+        return $params;
     }
 
     /**

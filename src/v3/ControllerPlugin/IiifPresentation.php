@@ -44,7 +44,14 @@ class IiifPresentation extends AbstractPlugin
                 ],
             ];
         }
-        return $collection;
+        // Allow modules to modify the collection.
+        $args = $this->eventManager->prepareArgs([
+            'collection' => $collection,
+            'item_ids' => $itemIds,
+        ]);
+        $event = new Event('iiif_presentation.3.items.collection', $controller, $args);
+        $this->eventManager->triggerEvent($event);
+        return $args['collection'];
     }
 
     /**
@@ -152,18 +159,25 @@ class IiifPresentation extends AbstractPlugin
                 continue;
             }
             // Allow modules to modify the canvas.
-            $eventManager = $this->eventManager;
-            $args = $eventManager->prepareArgs([
-                'canvas' => $canvas,
-                'canvas_type' => $canvasType,
-                'media' => $media,
-            ]);
-            $event = new Event('iiif_presentation.v3.canvas', $controller, $args);
-            $eventManager->triggerEvent($event);
+            $params = $this->triggerEvent(
+                'iiif_presentation.3.media.canvas',
+                [
+                    'canvas' => $canvas,
+                    'canvas_type' => $canvasType,
+                    'media_id' => $media->id(),
+                ]
+            );
             // Set the canvas to the manifest.
-            $manifest['items'][] = $args['canvas'];
+            $manifest['items'][] = $params['canvas'];
         }
-        return $manifest;
+        // Allow modules to modify the manifest.
+        $args = $this->eventManager->prepareArgs([
+            'manifest' => $manifest,
+            'item' => $item,
+        ]);
+        $event = new Event('iiif_presentation.3.item.manifest', $controller, $args);
+        $this->eventManager->triggerEvent($event);
+        return $args['manifest'];
     }
 
     /**
@@ -196,6 +210,17 @@ class IiifPresentation extends AbstractPlugin
             ];
         }
         return $metadata;
+    }
+
+    /**
+     * Trigger an event.
+     */
+    public function triggerEvent(string $name, array $params)
+    {
+        $params = $this->eventManager->prepareArgs($params);
+        $event = new Event($name, $this->getController(), $params);
+        $this->eventManager->triggerEvent($event);
+        return $params;
     }
 
     /**
