@@ -25,7 +25,11 @@ class File implements CanvasTypeInterface
 
     public function getCanvasForImageFile(MediaRepresentation $media, ItemController $controller)
     {
-        [$width, $height] = getimagesize($media->originalUrl());
+        // Attempt to get the dimensions via getimagesize(). If the function
+        // is unsuccessful, set arbitrary dimensions so the canvas is valid.
+        [$width, $height] = @getimagesize($media->originalUrl());
+        $width = $width ?: 1000;
+        $height = $height ?: 1000;
         return [
             '@id' => $controller->url()->fromRoute('iiif-presentation-2/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
             '@type' => 'sc:Canvas',
