@@ -6,103 +6,36 @@ use Omeka\Api\Representation\MediaRepresentation;
 
 class File implements CanvasTypeInterface
 {
+    protected $fileCanvasTypeManager;
+
+    public function __construct($fileCanvasTypeManager)
+    {
+        $this->fileCanvasTypeManager = $fileCanvasTypeManager;
+    }
+
+    /**
+     * Get the canvas array.
+     *
+     * Note that we get the file canvas type based on a priority heuristic:
+     * first, by media (MIME) type, then by extension, then by the type part of
+     * the media type.
+     */
     public function getCanvas(MediaRepresentation $media, ItemController $controller) : ?array
     {
         $mediaType = $media->mediaType();
-        switch (strtok($mediaType, '/')) {
-            case 'image':
-                return $this->getCanvasForImageFile($media, $controller);
-            case 'video':
-                return $this->getCanvasForVideoFile($media, $controller);
-            default:
-                return null;
+        $extension = $media->extension();
+        $type = strtok($mediaType, '/');
+        if ($this->fileCanvasTypeManager->has($mediaType)) {
+            $fileCanvasType = $mediaType;
+        } else if ($this->fileCanvasTypeManager->has($extension)) {
+            $fileCanvasType = $extension;
+        } else if ($this->fileCanvasTypeManager->has($type)) {
+            $fileCanvasType = $type;
+        } else {
+            // There is no corresponding file canvas type.
+            return null;
         }
-    }
-
-    public function getCanvasForImageFile(MediaRepresentation $media, ItemController $controller)
-    {
-        // Attempt to get the dimensions via getimagesize(). If the function
-        // is unsuccessful, set arbitrary dimensions so the canvas is valid.
-        [$width, $height] = @getimagesize($media->originalUrl());
-        $width = $width ?: 1000;
-        $height = $height ?: 1000;
-        return [
-            'id' => $controller->url()->fromRoute('iiif-presentation-3/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
-            'type' => 'Canvas',
-            'label' => [
-                'none' => [
-                    $media->displayTitle(),
-                ],
-            ],
-            'width' => $width,
-            'height' => $height,
-            'thumbnail' => [
-                [
-                    'id' => $media->thumbnailUrl('medium'),
-                    'type' => 'Image',
-                ],
-            ],
-            'metadata' => $controller->iiifPresentation3()->getMetadata($media),
-            'items' => [
-                [
-                    'id' => $controller->url()->fromRoute('iiif-presentation-3/item/annotation-page', ['media-id' => $media->id()], ['force_canonical' => true], true),
-                    'type' => 'AnnotationPage',
-                    'items' => [
-                        [
-                            'id' => $controller->url()->fromRoute('iiif-presentation-3/item/annotation', ['media-id' => $media->id()], ['force_canonical' => true], true),
-                            'type' => 'Annotation',
-                            'motivation' => 'painting',
-                            'body' => [
-                                'id' => $media->originalUrl(),
-                                'type' => 'Image',
-                                'format' => $media->mediaType(),
-                                'width' => $width,
-                                'height' => $height,
-                            ],
-                            'target' => $controller->url()->fromRoute('iiif-presentation-3/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
-                        ],
-                    ],
-                ],
-            ],
-        ];
-    }
-
-    public function getCanvasForVideoFile(MediaRepresentation $media, ItemController $controller)
-    {
-        return [
-            'id' => $controller->url()->fromRoute('iiif-presentation-3/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
-            'type' => 'Canvas',
-            'label' => [
-                'none' => [
-                    $media->displayTitle(),
-                ],
-            ],
-            'thumbnail' => [
-                [
-                    'id' => $media->thumbnailUrl('medium'),
-                    'type' => 'Image',
-                ],
-            ],
-            'metadata' => $controller->iiifPresentation3()->getMetadata($media),
-            'items' => [
-                [
-                    'id' => $controller->url()->fromRoute('iiif-presentation-3/item/annotation-page', ['media-id' => $media->id()], ['force_canonical' => true], true),
-                    'type' => 'AnnotationPage',
-                    'items' => [
-                        [
-                            'id' => $controller->url()->fromRoute('iiif-presentation-3/item/annotation', ['media-id' => $media->id()], ['force_canonical' => true], true),
-                            'type' => 'Annotation',
-                            'motivation' => 'painting',
-                            'body' => [
-                                'id' => $media->originalUrl(),
-                                'type' => 'Video',
-                                'format' => $media->mediaType(),
-                            ],
-                            'target' => $controller->url()->fromRoute('iiif-presentation-3/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
-                        ],
-                    ],
-                ],
-            ],
-        ];
+        $fileCanvasType = $this->fileCanvasTypeManager->get($fileCanvasType);
+        return $fileCanvasType->getCanvas($media, $controller);
     }
 }

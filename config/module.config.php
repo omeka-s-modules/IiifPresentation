@@ -12,8 +12,21 @@ return [
     ],
     'iiif_presentation_v3_canvas_types' => [
         'invokables' => [
-            'file' => v3\CanvasType\File::class,
             'iiif' => v3\CanvasType\IiifImage::class,
+        ],
+        'factories' => [
+            'file' => v3\Service\CanvasType\FileFactory::class,
+        ],
+    ],
+    'iiif_presentation_v3_file_canvas_types' => [
+        'invokables' => [
+            'image' => v3\FileCanvasType\Image::class,
+            'video' => v3\FileCanvasType\Video::class,
+            'audio' => v3\FileCanvasType\Audio::class,
+        ],
+        'aliases' => [
+            'application/ogg' => 'video',
+            'mp3' => 'audio',
         ],
     ],
     'translator' => [
@@ -37,6 +50,7 @@ return [
         'factories' => [
             'IiifPresentation\v2\CanvasTypeManager' => v2\Service\CanvasType\ManagerFactory::class,
             'IiifPresentation\v3\CanvasTypeManager' => v3\Service\CanvasType\ManagerFactory::class,
+            'IiifPresentation\v3\FileCanvasTypeManager' => v3\Service\FileCanvasType\ManagerFactory::class,
         ],
     ],
     'controllers' => [
