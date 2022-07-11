@@ -145,13 +145,15 @@ class IiifPresentation extends AbstractPlugin
                 ],
             ];
         }
+        // Manifest homepages (this item is assigned to these sites).
         foreach ($item->sites() as $site) {
             $manifest['homepage'][] = [
                 'id' => $controller->url()->fromRoute('site/resource-id', ['site-slug' => $site->slug(), 'controller' => 'item', 'action' => 'show', 'id' => $item->id()], ['force_canonical' => true]),
                 'type' => 'Text',
                 'label' => [
                     'none' => [sprintf('Item in site: %s', $site->title())],
-                ]
+                ],
+                'format' => 'text/html'
             ];
         }
         foreach ($item->media() as $media) {
