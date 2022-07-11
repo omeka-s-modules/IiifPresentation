@@ -134,7 +134,6 @@ class IiifPresentation extends AbstractPlugin
                 ],
             ],
             'metadata' => $this->getMetadata($item),
-            'items' => [],
         ];
         // Manifest thumbnail.
         $primaryMedia = $item->primaryMedia();
@@ -144,6 +143,15 @@ class IiifPresentation extends AbstractPlugin
                     'id' => $primaryMedia->thumbnailUrl('medium'),
                     'type' => 'Image',
                 ],
+            ];
+        }
+        foreach ($item->sites() as $site) {
+            $manifest['homepage'][] = [
+                'id' => $controller->url()->fromRoute('site/resource-id', ['site-slug' => $site->slug(), 'controller' => 'item', 'action' => 'show', 'id' => $item->id()], ['force_canonical' => true]),
+                'type' => 'Text',
+                'label' => [
+                    'none' => [sprintf('Item in site: %s', $site->title())],
+                ]
             ];
         }
         foreach ($item->media() as $media) {
