@@ -21,14 +21,14 @@ class Image implements FileCanvasTypeInterface
                     $media->displayTitle(),
                 ],
             ],
-            'width' => $width,
-            'height' => $height,
             'thumbnail' => [
                 [
                     'id' => $media->thumbnailUrl('medium'),
                     'type' => 'Image',
                 ],
             ],
+            'width' => $width,
+            'height' => $height,
             'metadata' => $controller->iiifPresentation3()->getMetadata($media),
             'items' => [
                 [
@@ -43,8 +43,6 @@ class Image implements FileCanvasTypeInterface
                                 'id' => $media->originalUrl(),
                                 'type' => 'Image',
                                 'format' => $media->mediaType(),
-                                'width' => $width,
-                                'height' => $height,
                             ],
                             'target' => $controller->url()->fromRoute('iiif-presentation-3/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
                         ],

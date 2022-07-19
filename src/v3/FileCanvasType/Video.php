@@ -22,6 +22,10 @@ class Video implements FileCanvasTypeInterface
                     'type' => 'Image',
                 ],
             ],
+            // In lieu of a method to get an accurate width and height, set
+            // arbitrary dimensions so the canvas is valid.
+            'width' => 1000,
+            'height' => 1000,
             'metadata' => $controller->iiifPresentation3()->getMetadata($media),
             'items' => [
                 [
