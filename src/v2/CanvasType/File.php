@@ -40,8 +40,6 @@ class File implements CanvasTypeInterface
                         '@id' => $media->originalUrl(),
                         '@type' => 'dctypes:Image',
                         'format' => $media->mediaType(),
-                        'width' => $width,
-                        'height' => $height,
                     ],
                     'on' => $controller->url()->fromRoute('iiif-presentation-2/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
                 ],

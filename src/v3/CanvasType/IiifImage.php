@@ -32,7 +32,7 @@ class IiifImage implements CanvasTypeInterface
                             'body' => [
                                 'id' => $media->originalUrl(),
                                 'type' => 'Image',
-                                'service' => $media->mediaData(),
+                                'service' => $imageInfo,
                             ],
                             'target' => $controller->url()->fromRoute('iiif-presentation-3/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
                         ],
