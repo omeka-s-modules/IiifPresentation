@@ -8,7 +8,14 @@ This module adds the following IIIF Presentation endpoints:
 
 ### IIIF Presentation v2
 
-These endpoints are available for version 2 of the IIIF Presentation API.
+These endpoints are available for version 2 of the IIIF Presentation API. Append
+these to your base Omeka URL. For example, if your Omeka installation is at
+
+`https://example.com/omeka-s`
+
+And you want to get the IIIF manifest for item ID #1234, append like this:
+
+`https://example.com/omeka-s/iiif-presentation/3/item/1234/manifest`
 
 #### /iiif-presentation/2/item/:item-id/manifest
 
