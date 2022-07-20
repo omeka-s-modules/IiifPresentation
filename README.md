@@ -2,6 +2,122 @@
 
 An [Omeka S](https://omeka.org/s/) module that implements the [IIIF Presentation API](https://iiif.io/api/presentation/3.0/).
 
+## Endpoints
+
+This module adds the following IIIF Presentation endpoints:
+
+### IIIF Presentation v2
+
+These endpoints are available for version 2 of the IIIF Presentation API.
+
+#### /iiif-presentation/2/item/:item-id/manifest
+
+Get the IIIF manifest resource for an Omeka item. Outputs JSON-LD.
+
+- `:item-id`: The Omeka item ID
+
+#### /iiif-presentation/2/item/:item-id
+
+View the IIIF manifest resource for an Omeka item. Redirects to the Omeka S IIIF
+viewer (Mirador).
+
+- `:item-id`: The Omeka item ID
+
+#### /iiif-presentation/2/item/:item-ids/collection
+
+Get the IIIF collection resource for two or more Omeka items. Outputs JSON-LD.
+
+- `:item-ids`: The Omeka item IDs, delimited by commas
+
+#### /iiif-presentation/2/item/:item-ids
+
+View the IIIF collection resource for two or more Omeka items. Redirects to the
+Omeka IIIF viewer (Mirador).
+
+- `:item-ids`: The Omeka item IDs, delimited by commas
+
+#### /iiif-presentation/2/item-set/:item-set-id/collection
+
+Get the IIIF collection resource for an Omeka item set. Outputs JSON-LD.
+
+- `:item-set-id`: The Omeka item set ID
+
+#### /iiif-presentation/2/item-set/:item-set-id
+
+View the IIIF collection resource for an Omeka item set. Redirects to the Omeka S
+IIIF viewer (Mirador).
+
+- `:item-set-id`: The Omeka item set ID
+
+#### /iiif-presentation/2/item-set/:item-set-ids/collection
+
+Get the IIIF collection resource for two or more Omeka item sets. Outputs JSON-LD.
+
+- `:item-set-ids`: The Omeka item set IDs, delimited by commas
+
+#### /iiif-presentation/2/item-set/:item-set-ids
+
+View the IIIF collection resource for two or more Omeka item sets. Redirects to
+the Omeka IIIF viewer (Mirador).
+
+- `:item-set-ids`: The Omeka item set IDs, delimited by commas
+
+### IIIF Presentation v3
+
+These endpoints are available for version 3 of the IIIF Presentation API.
+
+#### /iiif-presentation/3/item/:item-id/manifest
+
+Get the IIIF manifest resource for an Omeka item. Outputs JSON-LD.
+
+- `:item-id`: The Omeka item ID
+
+#### /iiif-presentation/3/item/:item-id
+
+View the IIIF manifest resource for an Omeka item. Redirects to the Omeka S IIIF
+viewer (Mirador).
+
+- `:item-id`: The Omeka item ID
+
+#### /iiif-presentation/3/item/:item-ids/collection
+
+Get the IIIF collection resource for two or more Omeka items. Outputs JSON-LD.
+
+- `:item-ids`: The Omeka item IDs, delimited by commas
+
+#### /iiif-presentation/3/item/:item-ids
+
+View the IIIF collection resource for two or more Omeka items. Redirects to the
+Omeka IIIF viewer (Mirador).
+
+- `:item-ids`: The Omeka item IDs, delimited by commas
+
+#### /iiif-presentation/3/item-set/:item-set-id/collection
+
+Get the IIIF collection resource for an Omeka item set. Outputs JSON-LD.
+
+- `:item-set-id`: The Omeka item set ID
+
+#### /iiif-presentation/3/item-set/:item-set-id
+
+View the IIIF collection resource for an Omeka item set. Redirects to the Omeka S
+IIIF viewer (Mirador).
+
+- `:item-set-id`: The Omeka item set ID
+
+#### /iiif-presentation/3/item-set/:item-set-ids/collection
+
+Get the IIIF collection resource for two or more Omeka item sets. Outputs JSON-LD.
+
+- `:item-set-ids`: The Omeka item set IDs, delimited by commas
+
+#### /iiif-presentation/3/item-set/:item-set-ids
+
+View the IIIF collection resource for two or more Omeka item sets. Redirects to
+the Omeka IIIF viewer (Mirador).
+
+- `:item-set-ids`: The Omeka item set IDs, delimited by commas
+
 ## Events
 
 This module triggers these events during the composition of certain IIIF Presentation
