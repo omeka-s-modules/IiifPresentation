@@ -8,12 +8,7 @@ class Image implements FileCanvasTypeInterface
 {
     public function getCanvas(MediaRepresentation $media, ItemController $controller) : ?array
     {
-        // Attempt to get the dimensions via getimagesize(). If the function
-        // is unsuccessful, set arbitrary dimensions so the canvas is valid.
-        [$width, $height] = @getimagesize($media->originalUrl());
-        $width = $width ?: 1000;
-        $height = $height ?: 1000;
-        return [
+        $canvas = [
             'id' => $controller->url()->fromRoute('iiif-presentation-3/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
             'type' => 'Canvas',
             'label' => [
@@ -27,8 +22,6 @@ class Image implements FileCanvasTypeInterface
                     'type' => 'Image',
                 ],
             ],
-            'width' => $width,
-            'height' => $height,
             'metadata' => $controller->iiifPresentation3()->getMetadata($media),
             'items' => [
                 [
@@ -50,5 +43,11 @@ class Image implements FileCanvasTypeInterface
                 ],
             ],
         ];
+        [$width, $height] = @getimagesize($media->originalUrl());
+        if ($width && $height) {
+            $canvas['width'] = $width;
+            $canvas['height'] = $height;
+        }
+        return $canvas;
     }
 }

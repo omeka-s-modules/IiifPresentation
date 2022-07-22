@@ -11,22 +11,15 @@ class File implements CanvasTypeInterface
         $mediaType = $media->mediaType();
         if ('image' !== strtok($mediaType, '/')) {
             // IIIF Presentation API 2 does not support non-image files as first-class
-            // resource content. While non-image files can be provided via external
+            // content resources. While non-image files can be provided via external
             // annotation lists referenced in the otherContent property, clients
             // are inconsistent or nonexistent in their support.
             return null;
         }
-        // Attempt to get the dimensions via getimagesize(). If the function
-        // is unsuccessful, set arbitrary dimensions so the canvas is valid.
-        [$width, $height] = @getimagesize($media->originalUrl());
-        $width = $width ?: 1000;
-        $height = $height ?: 1000;
-        return [
+        $canvas = [
             '@id' => $controller->url()->fromRoute('iiif-presentation-2/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
             '@type' => 'sc:Canvas',
             'label' => $media->displayTitle(),
-            'width' => $width,
-            'height' => $height,
             'thumbnail' => [
                 '@id' => $media->thumbnailUrl('medium'),
                 '@type' => 'dctypes:Image',
@@ -45,5 +38,11 @@ class File implements CanvasTypeInterface
                 ],
             ],
         ];
+        [$width, $height] = @getimagesize($media->originalUrl());
+        if ($width && $height) {
+            $canvas['width'] = $width;
+            $canvas['height'] = $height;
+        }
+        return $canvas;
     }
 }
