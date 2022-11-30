@@ -27,9 +27,9 @@ class File implements CanvasTypeInterface
         $type = strtok($mediaType, '/');
         if ($this->fileCanvasTypeManager->has($mediaType)) {
             $fileCanvasType = $mediaType;
-        } else if ($this->fileCanvasTypeManager->has($extension)) {
+        } elseif ($this->fileCanvasTypeManager->has($extension)) {
             $fileCanvasType = $extension;
-        } else if ($this->fileCanvasTypeManager->has($type)) {
+        } elseif ($this->fileCanvasTypeManager->has($type)) {
             $fileCanvasType = $type;
         } else {
             // There is no corresponding file canvas type.

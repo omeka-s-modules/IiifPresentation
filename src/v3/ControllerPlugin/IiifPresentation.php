@@ -153,7 +153,7 @@ class IiifPresentation extends AbstractPlugin
                 'label' => [
                     'none' => [sprintf('Item in site: %s', $site->title())],
                 ],
-                'format' => 'text/html'
+                'format' => 'text/html',
             ];
         }
         foreach ($item->media() as $media) {

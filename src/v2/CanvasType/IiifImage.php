@@ -33,6 +33,5 @@ class IiifImage implements CanvasTypeInterface
                 ],
             ],
         ];
-
     }
 }
