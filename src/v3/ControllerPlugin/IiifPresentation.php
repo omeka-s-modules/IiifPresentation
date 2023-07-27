@@ -4,7 +4,6 @@ namespace IiifPresentation\v3\ControllerPlugin;
 use IiifPresentation\v3\CanvasType\Manager as CanvasTypeManager;
 use Omeka\Api\Representation\AbstractResourceEntityRepresentation;
 use Laminas\EventManager\Event;
-use Laminas\EventManager\EventManagerInterface;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 class IiifPresentation extends AbstractPlugin
@@ -12,10 +11,9 @@ class IiifPresentation extends AbstractPlugin
     protected $canvasTypeManager;
     protected $eventManager;
 
-    public function __construct(CanvasTypeManager $canvasTypeManager, EventManagerInterface $eventManager)
+    public function __construct(CanvasTypeManager $canvasTypeManager)
     {
         $this->canvasTypeManager = $canvasTypeManager;
-        $this->eventManager = $eventManager;
     }
 
     /**
@@ -50,7 +48,7 @@ class IiifPresentation extends AbstractPlugin
             'item_ids' => $itemIds,
         ]);
         $event = new Event('iiif_presentation.3.items.collection', $controller, $args);
-        $this->eventManager->triggerEvent($event);
+        $this->getEventManager()->triggerEvent($event);
         return $args['collection'];
     }
 
@@ -181,12 +179,12 @@ class IiifPresentation extends AbstractPlugin
             $manifest['items'][] = $params['canvas'];
         }
         // Allow modules to modify the manifest.
-        $args = $this->eventManager->prepareArgs([
+        $args = $this->getEventManager()->prepareArgs([
             'manifest' => $manifest,
             'item' => $item,
         ]);
         $event = new Event('iiif_presentation.3.item.manifest', $controller, $args);
-        $this->eventManager->triggerEvent($event);
+        $this->getEventManager()->triggerEvent($event);
         return $args['manifest'];
     }
 
@@ -227,9 +225,9 @@ class IiifPresentation extends AbstractPlugin
      */
     public function triggerEvent(string $name, array $params)
     {
-        $params = $this->eventManager->prepareArgs($params);
+        $params = $this->getEventManager()->prepareArgs($params);
         $event = new Event($name, $this->getController(), $params);
-        $this->eventManager->triggerEvent($event);
+        $this->getEventManager()->triggerEvent($event);
         return $params;
     }
 
@@ -248,5 +246,18 @@ class IiifPresentation extends AbstractPlugin
         ]);
         $response->setContent(json_encode($content, JSON_PRETTY_PRINT));
         return $response;
+    }
+
+    /**
+     * Get the controller's event manager.
+     *
+     * @return \Laminas\EventManager\EventManagerInterface
+     */
+    public function getEventManager()
+    {
+        if (!$this->eventManager) {
+            $this->eventManager = $this->getController()->getEventManager();
+        }
+        return $this->eventManager;
     }
 }

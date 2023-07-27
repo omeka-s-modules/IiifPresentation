@@ -10,8 +10,7 @@ class IiifPresentationFactory implements FactoryInterface
     public function __invoke(ContainerInterface $services, $requestedName, array $options = null)
     {
         return new IiifPresentation(
-            $services->get('IiifPresentation\v2\CanvasTypeManager'),
-            $services->get('EventManager')
+            $services->get('IiifPresentation\v2\CanvasTypeManager')
         );
     }
 }
