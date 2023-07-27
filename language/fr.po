@@ -11,10 +11,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-29 12:21-0500\n"
+"POT-Creation-Date: 2023-07-27 13:03-0400\n"
 "PO-Revision-Date: 2022-11-29 17:21+0000\n"
 "Last-Translator: Pols12 <poltron54@gmail.com>, 2022\n"
-"Language-Team: French (https://www.transifex.com/omeka/teams/14184/fr/)\n"
+"Language-Team: French (https://app.transifex.com/omeka/teams/14184/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -26,12 +26,12 @@ msgstr ""
 msgid "Items Collection"
 msgstr "Liste de contenus"
 
-#: src/v2/ControllerPlugin/IiifPresentation.php:58
-#: src/v3/ControllerPlugin/IiifPresentation.php:70
+#: src/v2/ControllerPlugin/IiifPresentation.php:56
+#: src/v3/ControllerPlugin/IiifPresentation.php:68
 msgid "Item Sets Collection"
 msgstr "Liste de collections de contenus"
 
-#: src/v2/ControllerPlugin/IiifPresentation.php:104
-#: src/v3/ControllerPlugin/IiifPresentation.php:131
+#: src/v2/ControllerPlugin/IiifPresentation.php:102
+#: src/v3/ControllerPlugin/IiifPresentation.php:129
 msgid "Item metadata"
 msgstr "Métadonnées des contenus"

@@ -4,7 +4,7 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Kamil Comlekci, 2022
+# Rubén Alcaraz Martínez <rubenalcarazmartinez@gmail.com>, 2023
 # 
 #, fuzzy
 msgid ""
@@ -13,25 +13,25 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-27 13:03-0400\n"
 "PO-Revision-Date: 2022-11-29 17:21+0000\n"
-"Last-Translator: Kamil Comlekci, 2022\n"
-"Language-Team: Turkish (Turkey) (https://app.transifex.com/omeka/teams/14184/tr_TR/)\n"
+"Last-Translator: Rubén Alcaraz Martínez <rubenalcarazmartinez@gmail.com>, 2023\n"
+"Language-Team: Catalan (Spain) (https://app.transifex.com/omeka/teams/14184/ca_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: tr_TR\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: ca_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/v2/Controller/ItemController.php:17
 #: src/v3/Controller/ItemController.php:17
 msgid "Items Collection"
-msgstr "Öğeler Koleksiyonu"
+msgstr "Col·lecció del recurs"
 
 #: src/v2/ControllerPlugin/IiifPresentation.php:56
 #: src/v3/ControllerPlugin/IiifPresentation.php:68
 msgid "Item Sets Collection"
-msgstr "Öğe Grupları Koleksiyonu"
+msgstr ""
 
 #: src/v2/ControllerPlugin/IiifPresentation.php:102
 #: src/v3/ControllerPlugin/IiifPresentation.php:129
 msgid "Item metadata"
-msgstr "Öğe meta verileri"
+msgstr "Metadades del recurs"
