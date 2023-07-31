@@ -28,7 +28,6 @@ These endpoints are available for version 2 of the IIIF Presentation API.
 - `/iiif-presentation/2/item-set/:item-set-ids/collection`
     Get the IIIF collection resource for two or more Omeka item sets. Outputs JSON-LD.
     - `:item-set-ids`: The Omeka item set IDs, delimited by commas
-
 - `/iiif-presentation/2/item/:item-id`
     View the IIIF manifest resource for an Omeka item. Redirects to the Omeka S IIIF viewer (Mirador).
     - `:item-id`: The Omeka item ID
@@ -58,7 +57,6 @@ These endpoints are available for version 3 of the IIIF Presentation API.
 - `/iiif-presentation/3/item-set/:item-set-ids/collection`
     Get the IIIF collection resource for two or more Omeka item sets. Outputs JSON-LD.
     - `:item-set-ids`: The Omeka item set IDs, delimited by commas
-
 - `/iiif-presentation/3/item/:item-id`
     View the IIIF manifest resource for an Omeka item. Redirects to the Omeka S IIIF viewer (Mirador).
     - `:item-id`: The Omeka item ID
