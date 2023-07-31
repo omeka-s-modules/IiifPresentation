@@ -15,15 +15,7 @@ class ItemSetController extends AbstractActionController
     {
         $itemSetId = $this->params('item-set-id');
         $collection = $this->iiifPresentation2()->getItemSetCollection($itemSetId);
-        // Allow modules to modify the collection.
-        $params = $this->iiifPresentation2()->triggerEvent(
-            'iiif_presentation.2.item_set.collection',
-            [
-                'collection' => $collection,
-                'item_set_id' => $itemSetId,
-            ]
-        );
-        return $this->iiifPresentation2()->getResponse($params['collection']);
+        return $this->iiifPresentation2()->getResponse($collection);
     }
 
     public function viewCollectionsAction()
@@ -36,14 +28,6 @@ class ItemSetController extends AbstractActionController
     {
         $itemSetIds = explode(',', $this->params('item-set-ids'));
         $collection = $this->iiifPresentation2()->getItemSetsCollection($itemSetIds);
-        // Allow modules to modify the collection.
-        $params = $this->iiifPresentation2()->triggerEvent(
-            'iiif_presentation.2.item_set.collections',
-            [
-                'collection' => $collection,
-                'item_set_ids' => $itemSetIds,
-            ]
-        );
-        return $this->iiifPresentation2()->getResponse($params['collection']);
+        return $this->iiifPresentation2()->getResponse($collection);
     }
 }

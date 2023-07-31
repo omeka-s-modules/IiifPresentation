@@ -43,12 +43,13 @@ class IiifPresentation extends AbstractPlugin
             ];
         }
         // Allow modules to modify the collection.
-        $args = $this->eventManager->prepareArgs([
-            'collection' => $collection,
-            'item_ids' => $itemIds,
-        ]);
-        $event = new Event('iiif_presentation.3.items.collection', $controller, $args);
-        $this->getEventManager()->triggerEvent($event);
+        $args = $this->triggerEvent(
+            'iiif_presentation.3.item.collection',
+            [
+                'collection' => $collection,
+                'item_ids' => $itemIds,
+            ]
+        );
         return $args['collection'];
     }
 
@@ -78,7 +79,15 @@ class IiifPresentation extends AbstractPlugin
                 ],
             ];
         }
-        return $collection;
+        // Allow modules to modify the collection.
+        $args = $this->triggerEvent(
+            'iiif_presentation.3.item_set.collections',
+            [
+                'collection' => $collection,
+                'item_set_ids' => $itemSetIds,
+            ]
+        );
+        return $args['collection'];
     }
 
     /**
@@ -91,7 +100,15 @@ class IiifPresentation extends AbstractPlugin
         $controller = $this->getController();
         $itemSet = $controller->api()->read('item_sets', $itemSetId)->getContent();
         $itemIds = $controller->api()->search('items', ['item_set_id' => $itemSetId], ['returnScalar' => 'id'])->getContent();
-        return $this->getItemsCollection($itemIds, $itemSet->displayTitle());
+        $collection = $this->getItemsCollection($itemIds, $itemSet->displayTitle());
+        // Allow modules to modify the collection.
+        $args = $this->triggerEvent(
+            'iiif_presentation.3.item_set.collection', [
+                'collection' => $collection,
+                'item_set' => $itemSet,
+            ]
+        );
+        return $args['collection'];
     }
 
     /**
@@ -167,24 +184,25 @@ class IiifPresentation extends AbstractPlugin
                 continue;
             }
             // Allow modules to modify the canvas.
-            $params = $this->triggerEvent(
+            $args = $this->triggerEvent(
                 'iiif_presentation.3.media.canvas',
                 [
                     'canvas' => $canvas,
                     'canvas_type' => $canvasType,
-                    'media_id' => $media->id(),
+                    'media' => $media,
                 ]
             );
             // Set the canvas to the manifest.
-            $manifest['items'][] = $params['canvas'];
+            $manifest['items'][] = $args['canvas'];
         }
         // Allow modules to modify the manifest.
-        $args = $this->getEventManager()->prepareArgs([
-            'manifest' => $manifest,
-            'item' => $item,
-        ]);
-        $event = new Event('iiif_presentation.3.item.manifest', $controller, $args);
-        $this->getEventManager()->triggerEvent($event);
+        $args = $this->triggerEvent(
+            'iiif_presentation.3.item.manifest',
+            [
+                'manifest' => $manifest,
+                'item' => $item,
+            ]
+        );
         return $args['manifest'];
     }
 
@@ -223,12 +241,12 @@ class IiifPresentation extends AbstractPlugin
     /**
      * Trigger an event.
      */
-    public function triggerEvent(string $name, array $params)
+    public function triggerEvent(string $name, array $args)
     {
-        $params = $this->getEventManager()->prepareArgs($params);
-        $event = new Event($name, $this->getController(), $params);
+        $args = $this->getEventManager()->prepareArgs($args);
+        $event = new Event($name, $this->getController(), $args);
         $this->getEventManager()->triggerEvent($event);
-        return $params;
+        return $args;
     }
 
     /**

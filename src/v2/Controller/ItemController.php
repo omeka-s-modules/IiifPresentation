@@ -15,15 +15,7 @@ class ItemController extends AbstractActionController
     {
         $itemIds = explode(',', $this->params('item-ids'));
         $collection = $this->iiifPresentation2()->getItemsCollection($itemIds, $this->translate('Items Collection'));
-        // Allow modules to modify the collection.
-        $params = $this->iiifPresentation2()->triggerEvent(
-            'iiif_presentation.2.item.collection',
-            [
-                'collection' => $collection,
-                'item_ids' => $itemIds,
-            ]
-        );
-        return $this->iiifPresentation2()->getResponse($params['collection']);
+        return $this->iiifPresentation2()->getResponse($collection);
     }
 
     public function viewManifestAction()
@@ -36,14 +28,6 @@ class ItemController extends AbstractActionController
     {
         $itemId = $this->params('item-id');
         $manifest = $this->iiifPresentation2()->getItemManifest($itemId);
-        // Allow modules to modify the manifest.
-        $params = $this->iiifPresentation2()->triggerEvent(
-            'iiif_presentation.2.item.manifest',
-            [
-                'manifest' => $manifest,
-                'item_id' => $itemId,
-            ]
-        );
-        return $this->iiifPresentation2()->getResponse($params['manifest']);
+        return $this->iiifPresentation2()->getResponse($manifest);
     }
 }

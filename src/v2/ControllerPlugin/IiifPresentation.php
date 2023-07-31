@@ -38,7 +38,15 @@ class IiifPresentation extends AbstractPlugin
                 'label' => $item->displayTitle(),
             ];
         }
-        return $collection;
+        // Allow modules to modify the collection.
+        $args = $this->triggerEvent(
+            'iiif_presentation.2.item.collection',
+            [
+                'collection' => $collection,
+                'item_ids' => $itemIds,
+            ]
+        );
+        return $args['collection'];
     }
 
     /**
@@ -58,12 +66,20 @@ class IiifPresentation extends AbstractPlugin
         foreach ($itemSetIds as $itemSetId) {
             $itemSet = $controller->api()->read('item_sets', $itemSetId)->getContent();
             $collection['collections'][] = [
-                '@id' => $controller->url()->fromRoute('iiif-presentation-3/item-set/collection', ['item-set-id' => $itemSet->id()], ['force_canonical' => true], true),
+                '@id' => $controller->url()->fromRoute('iiif-presentation-2/item-set/collection', ['item-set-id' => $itemSet->id()], ['force_canonical' => true], true),
                 '@type' => 'sc:Collection',
                 'label' => $itemSet->displayTitle(),
             ];
         }
-        return $collection;
+        // Allow modules to modify the collection.
+        $args = $this->triggerEvent(
+            'iiif_presentation.2.item_set.collections',
+            [
+                'collection' => $collection,
+                'item_set_ids' => $itemSetIds,
+            ]
+        );
+        return $args['collection'];
     }
 
     /**
@@ -76,7 +92,16 @@ class IiifPresentation extends AbstractPlugin
         $controller = $this->getController();
         $itemSet = $controller->api()->read('item_sets', $itemSetId)->getContent();
         $itemIds = $controller->api()->search('items', ['item_set_id' => $itemSetId], ['returnScalar' => 'id'])->getContent();
-        return $this->getItemsCollection($itemIds, $itemSet->displayTitle());
+        $collection = $this->getItemsCollection($itemIds, $itemSet->displayTitle());
+        // Allow modules to modify the collection.
+        $args = $this->triggerEvent(
+            'iiif_presentation.2.item_set.collection',
+            [
+                'collection' => $collection,
+                'item_set' => $itemSet,
+            ]
+        );
+        return $args['collection'];
     }
 
     /**
@@ -124,18 +149,26 @@ class IiifPresentation extends AbstractPlugin
                 continue;
             }
             // Allow modules to modify the canvas.
-            $params = $this->triggerEvent(
+            $args = $this->triggerEvent(
                 'iiif_presentation.2.media.canvas',
                 [
                     'canvas' => $canvas,
                     'canvas_type' => $canvasType,
-                    'media_id' => $media->id(),
+                    'media' => $media,
                 ]
             );
             // Set the canvas to the manifest.
-            $manifest['sequences'][0]['canvases'][] = $params['canvas'];
+            $manifest['sequences'][0]['canvases'][] = $args['canvas'];
         }
-        return $manifest;
+        // Allow modules to modify the manifest.
+        $args = $this->triggerEvent(
+            'iiif_presentation.2.item.manifest',
+            [
+                'manifest' => $manifest,
+                'item' => $item,
+            ]
+        );
+        return $args['manifest'];
     }
 
     /**
@@ -184,12 +217,12 @@ class IiifPresentation extends AbstractPlugin
     /**
      * Trigger an event.
      */
-    public function triggerEvent(string $name, array $params)
+    public function triggerEvent(string $name, array $args)
     {
-        $params = $this->getEventManager()->prepareArgs($params);
-        $event = new Event($name, $this->getController(), $params);
+        $args = $this->getEventManager()->prepareArgs($args);
+        $event = new Event($name, $this->getController(), $args);
         $this->getEventManager()->triggerEvent($event);
-        return $params;
+        return $args;
     }
 
     /**
