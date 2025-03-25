@@ -43,10 +43,10 @@ class Image implements FileCanvasTypeInterface
                 ],
             ],
         ];
-        [$width, $height] = @getimagesize($media->originalUrl());
-        if ($width && $height) {
-            $canvas['width'] = $width;
-            $canvas['height'] = $height;
+        $imageSize = $controller->iiifPresentation3()->getImageSize($media);
+        if ($imageSize) {
+            $canvas['width'] = $imageSize['width'];
+            $canvas['height'] = $imageSize['height'];
         }
         return $canvas;
     }
