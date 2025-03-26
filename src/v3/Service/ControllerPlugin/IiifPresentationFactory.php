@@ -9,9 +9,10 @@ class IiifPresentationFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $services, $requestedName, array $options = null)
     {
-        return new IiifPresentation(
-            $services->get('IiifPresentation\v3\CanvasTypeManager'),
-            $services->get('Omeka\Connection')
+        $controllerPlugin = new IiifPresentation(
+            $services->get('IiifPresentation\v3\CanvasTypeManager')
         );
+        $controllerPlugin->setConnection($services->get('Omeka\Connection'));
+        return $controllerPlugin;
     }
 }

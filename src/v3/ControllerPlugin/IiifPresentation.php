@@ -1,23 +1,19 @@
 <?php
 namespace IiifPresentation\v3\ControllerPlugin;
 
-use Omeka\Api\Representation\MediaRepresentation;
-use Doctrine\DBAL\Connection;
+use IiifPresentation\ControllerPlugin\AbstractIiifPresentation;
 use IiifPresentation\v3\CanvasType\Manager as CanvasTypeManager;
 use Omeka\Api\Representation\AbstractResourceEntityRepresentation;
 use Laminas\EventManager\Event;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
-class IiifPresentation extends AbstractPlugin
+class IiifPresentation extends AbstractIiifPresentation
 {
     protected $canvasTypeManager;
-    protected $eventManager;
-    protected $conn;
 
-    public function __construct(CanvasTypeManager $canvasTypeManager, Connection $conn)
+    public function __construct(CanvasTypeManager $canvasTypeManager)
     {
         $this->canvasTypeManager = $canvasTypeManager;
-        $this->conn = $conn;
     }
 
     /**
@@ -243,17 +239,6 @@ class IiifPresentation extends AbstractPlugin
     }
 
     /**
-     * Trigger an event.
-     */
-    public function triggerEvent(string $name, array $args)
-    {
-        $args = $this->getEventManager()->prepareArgs($args);
-        $event = new Event($name, $this->getController(), $args);
-        $this->getEventManager()->triggerEvent($event);
-        return $args;
-    }
-
-    /**
      * Get a IIIF Presentation API response.
      *
      * @see https://iiif.io/api/presentation/3.0/#63-responses
@@ -268,51 +253,5 @@ class IiifPresentation extends AbstractPlugin
         ]);
         $response->setContent(json_encode($content, JSON_PRETTY_PRINT));
         return $response;
-    }
-
-    /**
-     * Get the controller's event manager.
-     *
-     * @return \Laminas\EventManager\EventManagerInterface
-     */
-    public function getEventManager()
-    {
-        if (!$this->eventManager) {
-            $this->eventManager = $this->getController()->getEventManager();
-        }
-        return $this->eventManager;
-    }
-
-    /**
-     * Get the image size (width and height).
-     *
-     * Checks cache before using a potentially expensive call to getimagesize().
-     *
-     * @param MediaRepresentation $media
-     * @return array An array containing image size, keyed by "width" and "height"
-     */
-    public function getImageSize(MediaRepresentation $media)
-    {
-        // Check cache first.
-        $sql = 'SELECT width, height FROM iiif_presentation_image_size WHERE id = ?';
-        $imageSize = $this->conn->fetchAssociative($sql, [$media->id()]);
-        if ($imageSize) {
-            $width = $imageSize['width'];
-            $height = $imageSize['height'];
-        } else {
-            $imageSize = @getimagesize($media->originalUrl());
-            if (false === $imageSize || 0 === $imageSize[0] || 0 === $imageSize[1]) {
-                return false; // Could not get width and/or height.
-            }
-            // Cache the size.
-            $this->conn->insert('iiif_presentation_image_size', [
-                'id' => $media->id(),
-                'width' => $imageSize[0],
-                'height' => $imageSize[1],
-            ]);
-            $width = $imageSize[0];
-            $height = $imageSize[1];
-        }
-        return ['width' => $width, 'height' => $height];
     }
 }
