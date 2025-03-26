@@ -6,7 +6,7 @@ use Omeka\Api\Representation\MediaRepresentation;
 
 class IiifImage implements CanvasTypeInterface
 {
-    public function getCanvas(MediaRepresentation $media, ItemController $controller) : ?array
+    public function getCanvas(MediaRepresentation $media, ItemController $controller): ?array
     {
         $imageInfo = $media->mediaData();
         return [

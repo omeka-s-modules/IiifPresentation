@@ -6,5 +6,5 @@ use Omeka\Api\Representation\MediaRepresentation;
 
 interface CanvasTypeInterface
 {
-    public function getCanvas(MediaRepresentation $media, ItemController $controller) : ?array;
+    public function getCanvas(MediaRepresentation $media, ItemController $controller): ?array;
 }

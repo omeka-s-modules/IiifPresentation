@@ -6,7 +6,7 @@ use Omeka\Api\Representation\MediaRepresentation;
 
 class File implements CanvasTypeInterface
 {
-    public function getCanvas(MediaRepresentation $media, ItemController $controller) : ?array
+    public function getCanvas(MediaRepresentation $media, ItemController $controller): ?array
     {
         $mediaType = $media->mediaType();
         if ('image' !== strtok($mediaType, '/')) {

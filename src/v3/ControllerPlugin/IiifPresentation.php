@@ -4,8 +4,6 @@ namespace IiifPresentation\v3\ControllerPlugin;
 use IiifPresentation\ControllerPlugin\AbstractIiifPresentation;
 use IiifPresentation\v3\CanvasType\Manager as CanvasTypeManager;
 use Omeka\Api\Representation\AbstractResourceEntityRepresentation;
-use Laminas\EventManager\Event;
-use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 class IiifPresentation extends AbstractIiifPresentation
 {

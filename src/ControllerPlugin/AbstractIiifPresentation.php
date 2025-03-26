@@ -3,8 +3,6 @@ namespace IiifPresentation\ControllerPlugin;
 
 use Omeka\Api\Representation\MediaRepresentation;
 use Doctrine\DBAL\Connection;
-use IiifPresentation\v2\CanvasType\Manager as CanvasTypeManager;
-use Omeka\Api\Representation\AbstractResourceEntityRepresentation;
 use Laminas\EventManager\Event;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 

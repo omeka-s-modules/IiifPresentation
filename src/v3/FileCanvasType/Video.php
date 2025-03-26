@@ -6,7 +6,7 @@ use Omeka\Api\Representation\MediaRepresentation;
 
 class Video implements FileCanvasTypeInterface
 {
-    public function getCanvas(MediaRepresentation $media, ItemController $controller) : ?array
+    public function getCanvas(MediaRepresentation $media, ItemController $controller): ?array
     {
         return [
             'id' => $controller->url()->fromRoute('iiif-presentation-3/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
