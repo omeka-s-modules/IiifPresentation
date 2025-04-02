@@ -6,7 +6,7 @@ use Omeka\Api\Representation\MediaRepresentation;
 
 class File implements CanvasTypeInterface
 {
-    public function getCanvas(MediaRepresentation $media, ItemController $controller) : ?array
+    public function getCanvas(MediaRepresentation $media, ItemController $controller): ?array
     {
         $mediaType = $media->mediaType();
         if ('image' !== strtok($mediaType, '/')) {
@@ -38,10 +38,10 @@ class File implements CanvasTypeInterface
                 ],
             ],
         ];
-        [$width, $height] = @getimagesize($media->originalUrl());
-        if ($width && $height) {
-            $canvas['width'] = $width;
-            $canvas['height'] = $height;
+        $imageSize = $controller->iiifPresentation3()->getImageSize($media);
+        if ($imageSize) {
+            $canvas['width'] = $imageSize['width'];
+            $canvas['height'] = $imageSize['height'];
         }
         return $canvas;
     }

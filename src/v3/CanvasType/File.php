@@ -20,7 +20,7 @@ class File implements CanvasTypeInterface
      * first, by media (MIME) type, then by extension, then by the type part of
      * the media type.
      */
-    public function getCanvas(MediaRepresentation $media, ItemController $controller) : ?array
+    public function getCanvas(MediaRepresentation $media, ItemController $controller): ?array
     {
         $mediaType = $media->mediaType();
         $extension = $media->extension();

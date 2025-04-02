@@ -1,15 +1,13 @@
 <?php
 namespace IiifPresentation\v3\ControllerPlugin;
 
+use IiifPresentation\ControllerPlugin\AbstractIiifPresentation;
 use IiifPresentation\v3\CanvasType\Manager as CanvasTypeManager;
 use Omeka\Api\Representation\AbstractResourceEntityRepresentation;
-use Laminas\EventManager\Event;
-use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
-class IiifPresentation extends AbstractPlugin
+class IiifPresentation extends AbstractIiifPresentation
 {
     protected $canvasTypeManager;
-    protected $eventManager;
 
     public function __construct(CanvasTypeManager $canvasTypeManager)
     {
@@ -239,17 +237,6 @@ class IiifPresentation extends AbstractPlugin
     }
 
     /**
-     * Trigger an event.
-     */
-    public function triggerEvent(string $name, array $args)
-    {
-        $args = $this->getEventManager()->prepareArgs($args);
-        $event = new Event($name, $this->getController(), $args);
-        $this->getEventManager()->triggerEvent($event);
-        return $args;
-    }
-
-    /**
      * Get a IIIF Presentation API response.
      *
      * @see https://iiif.io/api/presentation/3.0/#63-responses
@@ -264,18 +251,5 @@ class IiifPresentation extends AbstractPlugin
         ]);
         $response->setContent(json_encode($content, JSON_PRETTY_PRINT));
         return $response;
-    }
-
-    /**
-     * Get the controller's event manager.
-     *
-     * @return \Laminas\EventManager\EventManagerInterface
-     */
-    public function getEventManager()
-    {
-        if (!$this->eventManager) {
-            $this->eventManager = $this->getController()->getEventManager();
-        }
-        return $this->eventManager;
     }
 }
