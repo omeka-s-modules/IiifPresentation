@@ -4,16 +4,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Kamil Comlekci, 2022
+# Kamil Comlekci <kcomlekci@tedankara.k12.tr>, 2022
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-02 14:32-0400\n"
+"POT-Creation-Date: 2025-10-16 11:30-0400\n"
 "PO-Revision-Date: 2022-11-29 17:21+0000\n"
-"Last-Translator: Kamil Comlekci, 2022\n"
+"Last-Translator: Kamil Comlekci <kcomlekci@tedankara.k12.tr>, 2022\n"
 "Language-Team: Turkish (Turkey) (https://app.transifex.com/omeka/teams/14184/tr_TR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
