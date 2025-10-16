@@ -32,7 +32,11 @@ class IiifImage implements CanvasTypeInterface
                             'body' => [
                                 'id' => $media->originalUrl(),
                                 'type' => 'Image',
-                                'service' => $imageInfo,
+                                // Wrap the image info in an array. According to the 3.0
+                                // spec, the value of "service" must be an array of JSON
+                                // objects. Note that Mirador accepts it without a wrap,
+                                // but it may cause errors in consumers that expect it.
+                                'service' => [$imageInfo],
                             ],
                             'target' => $controller->url()->fromRoute('iiif-presentation-3/item/canvas', ['media-id' => $media->id()], ['force_canonical' => true], true),
                         ],
