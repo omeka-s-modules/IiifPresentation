@@ -2,6 +2,7 @@
 namespace IiifPresentation\ControllerPlugin;
 
 use Omeka\Api\Representation\MediaRepresentation;
+use Omeka\File\Store\StoreInterface;
 use Doctrine\DBAL\Connection;
 use Laminas\EventManager\Event;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
@@ -13,10 +14,16 @@ abstract class AbstractIiifPresentation extends AbstractPlugin
 {
     protected $conn;
     protected $eventManager;
+    protected StoreInterface $fileStore;
 
     public function setConnection(Connection $conn)
     {
         $this->conn = $conn;
+    }
+
+    public function setFileStore(StoreInterface $fileStore)
+    {
+        $this->fileStore = $fileStore;
     }
 
     /**
@@ -60,7 +67,13 @@ abstract class AbstractIiifPresentation extends AbstractPlugin
             $width = $imageSize['width'];
             $height = $imageSize['height'];
         } else {
-            $imageSize = @getimagesize($media->originalUrl());
+            if ($this->fileStore instanceof \Omeka\File\Store\Local) {
+                $storagePath = sprintf('original/%s', $media->filename());
+                $localPath = $this->fileStore->getLocalPath($storagePath);
+                $imageSize = @getimagesize($localPath);
+            } else {
+                $imageSize = @getimagesize($media->originalUrl());
+            }
             if (false === $imageSize || 0 === $imageSize[0] || 0 === $imageSize[1]) {
                 return false; // Could not get width and/or height.
             }

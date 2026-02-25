@@ -13,6 +13,7 @@ class IiifPresentationFactory implements FactoryInterface
             $services->get('IiifPresentation\v3\CanvasTypeManager')
         );
         $controllerPlugin->setConnection($services->get('Omeka\Connection'));
+        $controllerPlugin->setFileStore($services->get('Omeka\File\Store'));
         return $controllerPlugin;
     }
 }
