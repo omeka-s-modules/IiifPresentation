@@ -7,7 +7,7 @@ use Interop\Container\ContainerInterface;
 
 class FileFactory implements FactoryInterface
 {
-    public function __invoke(ContainerInterface $services, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $services, $requestedName, ?array $options = null)
     {
         $fileConvasTypeManager = $services->get('IiifPresentation\v3\FileCanvasTypeManager');
         return new File($fileConvasTypeManager);
